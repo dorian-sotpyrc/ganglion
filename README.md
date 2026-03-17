@@ -913,3 +913,143 @@ The value is not just in generating responses. The value is in building:
 - controllable optimisation
 - provider portability
 - repeatable integration behind OpenClaw
+
+---
+
+# Traceability and brain performance visibility
+
+Ganglion now supports a fuller observable execution path so you can inspect:
+
+```text
+IN → detailed process step results → OUT
+```
+
+This extends the existing architecture without replacing the earlier design.
+
+## Step-level trace flow
+
+```mermaid
+flowchart TD
+    A[Request In] --> B[Antennule: envelope normalisation]
+    B --> C[Pleon: orchestrator start]
+    C --> D[Supra: brain compile]
+    D --> E[Ventral: memory selection]
+    E --> F[Axon: classification + routing]
+    F --> G[Peduncle: provider/model resolution]
+    G --> H[Costing + artifact capture]
+    H --> I[Mandible: response shaping]
+    I --> J[Response Out]
+```
+
+## What is captured per run
+
+A run can now expose and persist:
+
+- request envelope summary
+- compiled brain checksum
+- classification result
+- selected memory counts
+- session summary used
+- routing decision
+- provider/model chosen
+- fallback usage
+- estimated tokens, cost, and latency
+- final output summary
+- run artifact path
+- trace artifact path
+
+## Trace artifact design
+
+Trace artifacts are written as structured JSON under:
+
+```text
+artifacts/traces/
+```
+
+Each trace contains:
+
+- `input_summary`
+- ordered `steps`
+- `output_summary`
+
+Typical step keys include:
+
+1. `brain_compile`
+2. `classification`
+3. `memory_selection`
+4. `routing`
+5. `costing`
+6. `artifact_capture`
+
+## Brain performance summary
+
+Ganglion can now generate a per-brain summary from run artifacts.
+
+Current output location:
+
+```text
+artifacts/brain_metrics/brain_performance_summary.json
+```
+
+Current visible metrics include:
+
+- `total_runs`
+- `fallback_runs`
+- `fallback_rate`
+- `confidential_runs`
+- `confidential_rate`
+- `estimated_total_cost_usd`
+- `average_latency_ms`
+- `average_episodic_memories_selected`
+- `average_critical_memories_selected`
+
+## Why this matters
+
+This gives Ganglion a visible operating loop:
+
+```text
+request
+  -> compiled brain
+  -> step-by-step execution record
+  -> output
+  -> accumulated brain metrics
+  -> tuning visibility
+```
+
+That makes it easier to:
+- inspect how a brain is behaving
+- compare brains over time
+- see whether routing policy is helping or hurting
+- see where confidential tasks are flowing
+- see whether fallback frequency is improving
+- prepare future dashboard or Clawboard visualisation
+
+## Current implementation shape
+
+This was added pragmatically on top of the existing design:
+
+- traceability is file/artifact first
+- brain-performance reporting aggregates from run artifacts
+- the design is integration-ready and auditable before live dashboard work
+
+## Recommended test commands
+
+```bash
+cd ~/ganglion
+source .venv/bin/activate
+pytest tests/step8 -q
+python -m scripts.run_integration_harness
+python - <<'PY'
+from ganglion.eyestalk.brain_metrics import BrainMetricsService
+print(BrainMetricsService().write_summary())
+PY
+```
+
+## Recommended GitHub push commands
+
+```bash
+cd ~/ganglion
+git add .
+git commit -m "Add traceability and brain performance visibility updates"
+git push
+```

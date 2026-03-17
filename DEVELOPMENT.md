@@ -485,3 +485,50 @@ Ganglion will fully succeed at the runtime integration stage when:
 - it is proven behind live OpenClaw workflows
 - it can execute through real providers safely
 - its persisted state model is hardened
+
+---
+
+## Step 8: Traceability and per-brain performance visibility
+
+**Status:** [x] Completed
+
+### Scope added
+- full request-to-output trace capture
+- ordered internal process step recording
+- trace artifact writing
+- per-brain performance summary generation
+- cost / latency rollup visibility
+- memory-selection visibility
+
+### Implemented
+- `ganglion/tracer/models.py`
+- `ganglion/tracer/service.py`
+- `ganglion/eyestalk/brain_metrics.py`
+- orchestrator patch for trace writing and richer run payloads
+- Step 8 regression tests
+
+### Tests achieved
+- trace file is written
+- trace contains step-level details
+- brain metrics summary file is written
+- brain metrics contains expected fields
+
+### Definition of done result
+- [x] run can be traced from input to output
+- [x] internal process step results are visible
+- [x] per-brain performance summary can be generated from artifacts
+
+### Actual implementation notes vs original design
+- traceability was added as a dedicated runtime concern rather than being buried only in general artifacts
+- brain-performance reporting is currently file/artifact based, not DB-first
+- performance visibility aggregates from `artifacts/runs`
+- this extends the original design cleanly rather than replacing earlier structure
+
+### Practical value now available
+Ganglion can now show:
+- what came in
+- what happened inside
+- what came out
+- how a given brain is performing over multiple runs
+
+This creates the basis for future dashboard visualisation and stronger learning/performance comparison.
