@@ -1,28 +1,33 @@
 # DEVELOPMENT.md
 
-Development plan for Ganglion.
+Development plan and implementation tracker for Ganglion.
 
-This document explains how to build Ganglion in a practical order, how to test it, and how to keep the architecture disciplined while integrating it behind OpenClaw.
+This document now serves two purposes:
+- original build plan
+- current implementation tracker with deviations noted clearly
+
+---
 
 ## Build philosophy
 
-Build Ganglion as one Python application with clean modules first.
+Build Ganglion as one Python application with clear module boundaries first.
 
 Do not start with:
 - microservices
 - embeddings-first architecture
-- unrestricted self-editing
+- uncontrolled self-editing
 - overcomplicated event buses
-- heavy infrastructure before the first useful run works
+- heavy infrastructure before core value is proven
 
 Start with:
-- a strong module boundary
+- strong module boundaries
 - brain packs on disk
-- Postgres for structured truth
-- filesystem artifacts
 - deterministic assembly
 - conservative routing
-- auditable run capture
+- auditable evaluation
+- progressive hardening
+
+---
 
 ## Project goals during development
 
@@ -31,15 +36,26 @@ The development process should preserve these outcomes:
 - provider neutrality
 - small runtime contexts
 - exportable brain assets
-- good OpenClaw integration
+- clean OpenClaw integration
 - measurable cost reduction
 - safe self-improvement
 
-## Recommended 7-step build and test plan
+---
 
-### Step 1: Scaffold the project and storage layer
+## Development tracker
 
-Build:
+Legend:
+- [x] completed
+- [~] partially completed / scaffolded
+- [ ] not yet complete
+
+---
+
+## Step 1: Scaffold the project and storage layer
+
+**Status:** [x] Completed
+
+### Original target
 - repository skeleton
 - Python package structure
 - config loader
@@ -49,103 +65,150 @@ Build:
 - filesystem artifact root
 - minimal test harness
 
-Implement first:
+### Implemented
 - `ganglion/config/settings.py`
 - `ganglion/storage/db.py`
 - `ganglion/storage/models.py`
 - `ganglion/shellbank/object_store.py`
+- `pyproject.toml`
+- `alembic.ini`
+- migration environment scaffold
+- smoke tests
 
-Tests:
+### Tests achieved
 - imports succeed
 - configuration loads from environment
-- database connects
-- migrations run
-- object storage can write and read a file
+- DB engine can be created
+- migration scaffold exists
+- object store write/read works
+- pytest smoke passed
 
-Definition of done:
-- `pytest` passes basic smoke tests
-- `alembic upgrade head` works
-- local artifact root is writable
+### Definition of done result
+- [x] `pytest` passes basic smoke tests
+- [x] `alembic` scaffold exists and is usable
+- [x] local artifact root is writable
 
-### Step 2: Build Carapace and Supra foundations
+### Actual implementation notes vs original design
+- DB layer is scaffolded but real persisted application state is not yet database-backed
+- Python 3.10 was used successfully in practice even though early scaffold text targeted 3.12+
 
-Build:
+---
+
+## Step 2: Build Carapace and Supra foundations
+
+**Status:** [x] Completed
+
+### Original target
 - brain manifest schema
 - brain pack loader
 - active version lookup
 - deterministic section compiler
 - core section ordering rules
 
-Implement first:
+### Implemented
 - `ganglion/carapace/manifests.py`
 - `ganglion/carapace/registry.py`
 - `ganglion/supra/compiler.py`
 - `ganglion/supra/selectors.py`
+- sample shared brain
+- sample `surgeon` brain
 
-Tests:
+### Tests achieved
 - shared brain pack loads
 - agent-specific brain pack loads
-- overlay precedence works deterministically
-- missing/invalid manifests fail clearly
-- compiled result checksum is stable
+- overlay precedence is deterministic
+- invalid manifest fails clearly
+- compiled checksum is stable
 
-Definition of done:
-- one agent brain can be compiled from disk
-- output is reproducible
-- brain version metadata is stored and retrievable
+### Definition of done result
+- [x] one agent brain can be compiled from disk
+- [x] output is reproducible
+- [~] brain version metadata is stored and retrievable through manifest/registry, but not yet in a DB-backed deployment registry at this stage
 
-### Step 3: Build Antennule, Pleon, and Mandible runtime path
+### Actual implementation notes vs original design
+- versioning is manifest-driven and filesystem-based rather than DB-driven
+- shared and agent overlays were proven early with the `surgeon` example brain
 
-Build:
+---
+
+## Step 3: Build Antennule, Pleon, and Mandible runtime path
+
+**Status:** [x] Completed
+
+### Original target
 - OpenClaw request adapter
 - internal run request schema
 - orchestrator
 - response processor
 - minimal end-to-end run flow without real model call
 
-Implement first:
+### Implemented
 - `ganglion/antennule/request_adapter.py`
 - `ganglion/antennule/openclaw_adapter.py`
 - `ganglion/pleon/orchestrator.py`
 - `ganglion/mandible/response_processor.py`
 
-Tests:
+### Tests achieved
 - mock OpenClaw request enters Ganglion
 - orchestrator resolves active brain
 - compiled runtime package is produced
-- response object is mapped back correctly
+- response object maps back correctly
 
-Definition of done:
-- a mocked OpenClaw request can pass through Ganglion end to end
+### Definition of done result
+- [x] mocked OpenClaw request passes end to end
 
-### Step 4: Build Axon and Peduncle routing layer
+### Actual implementation notes vs original design
+- runtime path stayed intentionally mocked at provider execution level
+- this preserved architectural momentum without waiting for live provider hookup
 
-Build:
+---
+
+## Step 4: Build Axon and Peduncle routing layer
+
+**Status:** [x] Completed
+
+### Original target
 - task classification
 - route profiles
 - cheap-vs-strong lane selector
 - provider abstraction interface
 - fallback policy
 
-Implement first:
+### Implemented
 - `ganglion/pleon/classifier.py`
 - `ganglion/axon/router.py`
 - `ganglion/axon/routing_profiles.py`
 - `ganglion/peduncle/provider_adapter.py`
 
-Tests:
-- low-risk routine fixtures route to cheap tier
-- high-risk or high-complexity fixtures route to strong tier
-- fallback on simulated provider failure works
-- provider abstraction can be swapped without changing orchestration logic
+### Additional implemented behaviour beyond original baseline
+- confidentiality auto-detection
+- confidentiality-aware route escalation
+- user-requested lane/provider/model overrides
+- rejection of unsafe cheap overrides for confidential work
 
-Definition of done:
-- routing decisions are deterministic for test fixtures
-- provider calls are abstracted behind Peduncle
+### Tests achieved
+- low-risk tasks route to cheap lane
+- high-complexity tasks route to strong lane
+- confidential tasks route to private strong lane
+- user model/provider override applies when allowed
+- unsafe confidential downgrade is rejected
+- simulated fallback path works
 
-### Step 5: Build Ventral, Forager, and Shellbank evidence flow
+### Definition of done result
+- [x] routing decisions are deterministic for test fixtures
+- [x] provider calls are abstracted behind Peduncle
 
-Build:
+### Actual implementation notes vs original design
+- provider mapping is currently hardcoded in router logic rather than external config
+- confidentiality-aware selection arrived earlier and stronger than the original generic step description
+
+---
+
+## Step 5: Build Ventral, Forager, and Shellbank evidence flow
+
+**Status:** [x] Completed
+
+### Original target
 - memory metadata schema
 - critical memory selector
 - episodic memory selector
@@ -153,25 +216,35 @@ Build:
 - run capture and artifact storage
 - session summary compaction
 
-Implement first:
+### Implemented
 - `ganglion/ventral/service.py`
-- `ganglion/ventral/selectors.py`
 - `ganglion/forager/search.py`
 - `ganglion/shellbank/artifacts.py`
+- orchestrator integration for memory bundle and artifact writing
 
-Tests:
-- critical memory loads when relevant
-- irrelevant memory is excluded
-- archive search returns ranked results
-- run artifacts are written correctly
-- compact session summary stays within budget
+### Tests achieved
+- critical memory loads
+- relevant episodic memory selected
+- session summary compacts correctly
+- archive search returns results
+- run artifact written correctly
 
-Definition of done:
-- runtime assembly can include selected memory and capture artifacts
+### Definition of done result
+- [x] runtime assembly can include selected memory
+- [x] artifacts are captured for runs
 
-### Step 6: Build Eyestalk and Molt controlled optimisation
+### Actual implementation notes vs original design
+- memory currently uses seeded in-code items, not DB persistence
+- search is simple text search rather than true Postgres FTS yet
+- despite this, the architectural interfaces are in place and working
 
-Build:
+---
+
+## Step 6: Build Eyestalk and Molt controlled optimisation
+
+**Status:** [x] Completed
+
+### Original target
 - run metrics
 - evaluation records
 - repeated failure pattern extraction
@@ -180,206 +253,235 @@ Build:
 - replay harness
 - conservative change-set output
 
-Implement first:
-- `ganglion/eyestalk/service.py`
+### Implemented
 - `ganglion/eyestalk/metrics.py`
 - `ganglion/eyestalk/patterns.py`
+- `ganglion/eyestalk/replay.py`
+- `ganglion/eyestalk/service.py`
 - `ganglion/molt/scheduler.py`
+- `ganglion/molt/candidates.py`
+- `ganglion/molt/experiments.py`
 - `ganglion/molt/service.py`
 
-Tests:
-- repeated bad runs create detectable patterns
-- tuning cycle runs on fixture data
-- candidate improvements are generated
-- candidate improvements do not auto-deploy without rule checks
+### Tests achieved
+- failure patterns detected
+- replay summary generated
+- candidates generated
+- tuning cycle writes artifact output
 
-Definition of done:
-- Molt can run a scheduled cycle and produce auditable outputs
+### Definition of done result
+- [x] Molt can run a scheduled cycle on fixture data
+- [x] outputs are conservative and auditable
 
-### Step 7: Integrate with real OpenClaw flow and harden
+### Actual implementation notes vs original design
+- tuning remains artifact-driven and conservative
+- no auto-deploy behaviour was introduced
+- this matches the intended safety direction well
 
-Build:
-- real OpenClaw hook integration
+---
+
+## Step 7: Integrate with real OpenClaw flow and harden
+
+This step was split into two parts in practice.
+
+### Step 7A: Integration-ready hardening without live OpenClaw
+
+**Status:** [x] Completed
+
+#### Original step elements targeted in 7A
+- stronger integration path in Antennule
 - retention policy
 - export/import commands
 - rollback support
 - regression fixture suite
-- performance and cost tracking
+- performance and cost tracking scaffolding
 
-Implement:
-- real integration path in Antennule
-- real deployment controls in Carapace
-- export utilities in Shellbank
+#### Implemented
+- `ganglion/antennule/integration_contract.py`
+- upgraded `ganglion/antennule/openclaw_adapter.py`
+- `ganglion/carapace/deployment.py`
+- `ganglion/shellbank/exports.py`
+- `ganglion/shellbank/retention.py`
+- `ganglion/eyestalk/costs.py`
+- integration harness script
+- Step 7A regression fixtures and tests
 
-Tests:
-- live integration smoke test
-- multiple agent brain regression suite
-- export/import round trip
-- cheap-tier success benchmark
-- strong-tier escalation benchmark
-- rollback test
+#### Tests achieved
+- envelope normalisation works
+- integration harness runs
+- export/import roundtrip works
+- deployment record and rollback record work
+- retention policy runs
+- cost estimate scaffold works
+- Step 7A pytest passes
 
-Definition of done:
-- Ganglion works behind OpenClaw in a production-like flow
-- brain assets can be exported and restored
-- routing and assembly behaviour are measurable
+#### Definition of done result
+- [x] integration-ready path exists
+- [x] export/import exists
+- [x] rollback support exists
+- [x] retention policy exists
+- [x] regression harness exists
+- [x] cost/performance tracking scaffold exists
 
-## Daily development rules
+#### Actual implementation notes vs original design
+- this is **integration-ready**, not **live OpenClaw validated** yet
+- the harness uses a production-like mocked envelope rather than a live OpenClaw runtime
 
-Keep these rules during implementation:
+### Step 7B: Live OpenClaw runtime validation
 
-1. Every module must have a clear boundary.
-2. Brain assets stay in Markdown/JSON, not hidden in code.
-3. Provider-specific behaviour must stay inside Peduncle.
-4. Prompt budgets must be enforced inside Supra.
-5. Memory writes must be explicit and scored inside Ventral.
-6. Tuning must be auditable inside Molt.
-7. Deployment state must be versioned in Carapace.
+**Status:** [ ] Not yet complete
 
-## Recommended initial database groups
+#### Still required to fully close Step 7
+- real OpenClaw ingress compatibility testing
+- real tool/runtime handoff testing
+- real provider execution under OpenClaw control
+- real session/channel metadata verification
+- production-like regression against live environment behaviour
 
-### Brain and registry
-- agents
-- brain_versions
-- brain_sections
-- routing_profiles
-- deployments
+---
 
-### Memory
-- memory_items
-- memory_links
-- memory_access_log
-- memory_candidates
+## Suggested file creation order actually used
 
-### Runtime
-- sessions
-- runs
-- run_outputs
-- tool_calls
+The implementation broadly followed the intended phased order, but in practice the work grouped around working vertical slices:
 
-### Evaluation and tuning
-- feedback_events
-- evaluation_runs
-- evaluation_metrics
-- failure_patterns
-- tuning_schedules
-- tuning_cycles
-- change_sets
+1. scaffold / settings / db / object store
+2. manifest / registry / compiler
+3. request / orchestrator / response
+4. classifier / routing / provider abstraction
+5. memory / search / artifact capture
+6. evaluation / tuning
+7. integration contract / export / rollback / retention / cost tracking
 
-## Suggested file creation order
+This was a good implementation approach because each stage delivered a testable working layer.
 
-Create files in this order:
+---
 
-1. `pyproject.toml`
-2. `ganglion/config/settings.py`
-3. `ganglion/storage/db.py`
-4. `ganglion/storage/models.py`
-5. `ganglion/carapace/manifests.py`
-6. `ganglion/carapace/registry.py`
-7. `ganglion/supra/compiler.py`
-8. `ganglion/supra/assembler.py`
-9. `ganglion/antennule/request_adapter.py`
-10. `ganglion/pleon/orchestrator.py`
-11. `ganglion/axon/router.py`
-12. `ganglion/peduncle/provider_adapter.py`
-13. `ganglion/ventral/service.py`
-14. `ganglion/mandible/response_processor.py`
-15. `ganglion/eyestalk/service.py`
-16. `ganglion/molt/service.py`
+## Current completion summary
 
-## Suggested first brain packs
+### Core architecture
+- [x] scaffold
+- [x] compiler
+- [x] runtime path
+- [x] routing
+- [x] memory selection
+- [x] evaluation and tuning
+- [x] integration-ready hardening
+- [ ] live OpenClaw runtime validation
 
-Create three initial brains:
+### Brain assets
+- [x] shared brain
+- [x] surgeon agent brain
+- [ ] broader agent pack library
 
-### 1. Surgeon brain
-Purpose:
-- high-risk system changes
-- verification-heavy technical work
+### Persistence
+- [x] filesystem artifacts
+- [~] DB scaffold only
+- [ ] full DB-backed runtime state
 
-### 2. Builder brain
-Purpose:
-- implementation planning
-- scaffold creation
-- system integration work
+### Provider integration
+- [x] abstraction interface
+- [x] simulated fallback behaviour
+- [ ] live provider APIs
 
-### 3. Analyst brain
-Purpose:
-- reports
-- architecture summaries
-- research-backed outputs
+### Testing
+- [x] smoke tests
+- [x] step-by-step regression tests through 7A
+- [ ] live environment regression with real OpenClaw runtime
 
-Each should contain:
-- identity.md
-- constraints.md
-- style.md
-- tool_contract.md
-- memory_policy.md
-- at least 3 SOPs
-- at least 3 skills
-- one routing profile
+---
 
-## Testing strategy
+## Actual implementation changes compared to original design
 
-### Unit tests
-Cover:
-- manifest validation
-- section ordering
-- routing decisions
-- memory selection
-- response processing
-- scoring logic
+### Change 1: file-first implementation instead of database-first implementation
+Reason:
+- faster end-to-end progress
+- easier debugging on VPS
+- less friction while architecture was still changing
 
-### Integration tests
-Cover:
-- OpenClaw request adaptation
-- end-to-end assembly path
-- provider abstraction behaviour
-- artifact writing
-- tuning cycle flow
+Impact:
+- many artefacts and state transitions are JSON/file-backed today
+- future work should migrate selected state into DB where it adds real value
 
-### Regression tests
-Use fixed fixtures for:
-- compiled brain checksums
-- route decisions
-- memory inclusion/exclusion
-- replay scores
-- export/import round trips
+### Change 2: confidentiality-aware routing added as a first-class concern early
+Reason:
+- explicit requirement for model/provider choice based on sensitivity
+
+Impact:
+- routing architecture is already stronger and more realistic than the original minimal router brief
+
+### Change 3: Step 7 split into 7A and 7B
+Reason:
+- no live OpenClaw environment was required to continue building value
+
+Impact:
+- architecture is integration-ready now
+- final runtime validation remains a clearly bounded future task
+
+### Change 4: provider layer remains mock-first
+Reason:
+- allowed safe validation of routing, metadata flow, and fallback semantics without external dependency noise
+
+Impact:
+- next provider integration step should preserve the current Peduncle interface rather than redesigning it
+
+### Change 5: memory remains seeded and selection-driven, not persistent yet
+Reason:
+- validates memory interfaces and orchestration before committing to a storage design
+
+Impact:
+- future persistent memory work can be done behind existing Ventral interfaces
+
+---
+
+## Recommended next work after 7A
+
+### Priority 1: Step 7B live OpenClaw validation
+- wire Ganglion behind real OpenClaw entrypoints
+- validate request shape and response shape against real runtime
+- validate tool runtime expectations
+- validate real provider execution path
+
+### Priority 2: externalise config
+- provider/model mapping
+- confidentiality policies
+- lane policy
+- override permissions
+
+### Priority 3: move selected state into persistent storage
+- deployment state
+- memory state
+- eval state
+- tuning cycle history
+
+### Priority 4: expand agent library
+- builder brain
+- analyst brain
+- more OpenClaw-specialised brains
+
+---
 
 ## Non-negotiable safety controls
 
-Do not allow automatic tuning to change without approval:
-- safety rules
-- destructive permissions
-- identity and trust boundaries
-- tool access scope
+Still keep these rules:
+- do not auto-deploy tuning changes without approval
+- do not let tuning change identity/trust boundaries automatically
+- do not allow unsafe cheap routing for confidential tasks
+- do not let provider overrides bypass policy
 
-Do allow controlled tuning of:
-- ranking weights
-- retrieval thresholds
-- compaction thresholds
-- SOP ordering
-- cheap-vs-strong routing thresholds
+---
 
-## First production target
+## Success definition now
 
-The first production target is not “full self-learning”.
+Ganglion has already succeeded at the architecture proof stage when:
+- brains are compiled deterministically
+- memory is selected instead of dumped
+- confidentiality influences routing
+- provider choice is abstracted
+- evidence is captured
+- tuning outputs are auditable
+- OpenClaw integration seam is real and testable
 
-The first production target is:
-
-- OpenClaw can call Ganglion
-- Ganglion assembles a structured brain
-- Ganglion selects memory selectively
-- Ganglion routes cost-effectively
-- Ganglion records enough evidence to improve later
-
-That is the correct base.
-
-## Definition of project success
-
-Ganglion is successful when:
-- brains become reusable assets rather than ad hoc prompts
-- agent runtime cost becomes measurable and optimisable
-- task-specific brains improve quality and consistency
-- OpenClaw integration stays clean
-- new providers can be added without rewriting the system
-- the system learns through controlled evidence, not chaos
+Ganglion will fully succeed at the runtime integration stage when:
+- it is proven behind live OpenClaw workflows
+- it can execute through real providers safely
+- its persisted state model is hardened
