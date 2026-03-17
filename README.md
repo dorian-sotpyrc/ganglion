@@ -1,0 +1,580 @@
+# Ganglion
+
+Distributed brain, memory, routing, and optimisation architecture behind OpenClaw.
+
+Ganglion is a provider-agnostic intelligence substrate that sits behind OpenClaw and helps agents become cheaper, sharper, more structured, and more valuable over time. It treats brains as versioned assets rather than oversized prompts, and it compiles runtime context from stable brain sections, task-specific operational modules, memory, and current task state.
+
+## What Ganglion is
+
+Ganglion is the system responsible for:
+
+- structured brain packs
+- task-specific brain composition
+- selective memory recall
+- cost-aware routing
+- provider abstraction
+- run capture and evaluation
+- controlled self-improvement
+
+OpenClaw remains the front operating layer. Ganglion sits behind it and supplies the intelligence architecture that improves quality, control, and cost efficiency.
+
+## Why this exists
+
+Without a structured brain platform, agent runtimes tend to drift toward:
+- giant generic prompts
+- noisy memory
+- poor reuse of domain-specific behaviour
+- weak provider portability
+- rising token cost
+- limited learning from prior work
+
+Ganglion fixes that by separating the system into durable and reusable layers:
+- core brain
+- operational brain
+- memory
+- runtime working context
+- evaluation
+- tuning
+
+## Core idea
+
+A brain is not one prompt.
+
+A brain is a compiled runtime package built from:
+- stable identity and constraints
+- reusable SOPs and skills
+- selected high-signal memory
+- current task context
+- compact recent state
+
+That package is assembled per request and routed to the cheapest viable model lane.
+
+## Architecture position relative to OpenClaw
+
+OpenClaw owns:
+- gateways and channels
+- runtime invocation
+- tool surface
+- session transport
+- operator workflows
+
+Ganglion adds:
+- brain registry
+- runtime brain assembly
+- memory selection
+- routing
+- evaluation
+- tuning
+- exportable brain assets
+
+Typical request flow:
+
+1. OpenClaw receives a request.
+2. OpenClaw resolves the agent, session, and permissions.
+3. OpenClaw passes the request into Ganglion.
+4. Ganglion classifies the task and risk.
+5. Ganglion assembles the working brain.
+6. Ganglion selects the execution lane.
+7. OpenClaw executes against the chosen provider and tools.
+8. Ganglion records the run, evaluations, and memory candidates.
+9. Ganglion tuning cycles improve the system over time.
+
+## Ganglion module map
+
+All module names are tied to crustacean anatomy or nervous-system concepts.
+
+### Antennule
+OpenClaw integration and inbound request adaptation.
+
+Responsibilities:
+- accept normalised OpenClaw request envelopes
+- attach agent/session metadata
+- prepare internal run request objects
+
+Suggested package:
+- `ganglion/antennule/`
+
+### Pleon
+Runtime orchestrator and execution backbone.
+
+Responsibilities:
+- coordinate the request lifecycle
+- invoke classifier, assembler, router, and capture
+- manage end-to-end run flow
+
+Suggested package:
+- `ganglion/pleon/`
+
+### Supra
+Brain assembler and compiler.
+
+Responsibilities:
+- load stable brain sections
+- select operational overlays
+- enforce context budgets
+- compile the final runtime brain package
+
+Suggested package:
+- `ganglion/supra/`
+
+### Carapace
+Registry, versioning, deployment guard, and manifest governance.
+
+Responsibilities:
+- track active brain versions
+- validate manifests
+- manage deployments and rollback state
+- protect integrity of active brain assets
+
+Suggested package:
+- `ganglion/carapace/`
+
+### Ventral
+Memory service and memory fabric.
+
+Responsibilities:
+- read critical memory
+- retrieve episodic memory
+- select relevant memory for tasks
+- write candidate memory
+- prune low-value memory
+
+Suggested package:
+- `ganglion/ventral/`
+
+### Axon
+Routing and execution-lane selection.
+
+Responsibilities:
+- classify cheap vs strong execution path
+- enforce task-class routing policy
+- support provider-agnostic lane selection
+- escalate when complexity or risk increases
+
+Suggested package:
+- `ganglion/axon/`
+
+### Peduncle
+Provider abstraction and external model bridge.
+
+Responsibilities:
+- normalise provider calls
+- expose a common invoke interface
+- capture provider cost, latency, and failure data
+- isolate provider-specific quirks at the edge
+
+Suggested package:
+- `ganglion/peduncle/`
+
+### Chela
+Tool bus and action interface.
+
+Responsibilities:
+- standardise tool request and response contracts
+- handle tool execution logging
+- mediate calls to internal and external tools
+- enforce tool permission checks
+
+Suggested package:
+- `ganglion/chela/`
+
+### Mandible
+Response processor and output shaping.
+
+Responsibilities:
+- post-process raw model responses
+- validate structure and safety
+- attach metadata
+- prepare response payload for OpenClaw
+
+Suggested package:
+- `ganglion/mandible/`
+
+### Eyestalk
+Evaluation, observability, and metrics.
+
+Responsibilities:
+- capture run quality signals
+- track KPIs
+- extract repeated failure/success patterns
+- support dashboards and analysis
+
+Suggested package:
+- `ganglion/eyestalk/`
+
+### Molt
+Tuning and controlled self-improvement loop.
+
+Responsibilities:
+- run scheduled tuning cycles
+- generate candidate improvements
+- replay and evaluate candidates
+- create change sets and controlled deployments
+
+Suggested package:
+- `ganglion/molt/`
+
+### Shellbank
+Artifacts, exports, and object storage layer.
+
+Responsibilities:
+- store run artifacts
+- store compiled context snapshots
+- export/import brain packs
+- retain reports and experiment outputs
+
+Suggested package:
+- `ganglion/shellbank/`
+
+### Forager
+Retrieval and archive search layer.
+
+Responsibilities:
+- search archived memory and artifacts
+- support FTS and later embeddings
+- return ranked retrieval results
+- keep searchable content separate from always-loaded memory
+
+Suggested package:
+- `ganglion/forager/`
+
+## Brain model
+
+Ganglion uses four brain layers.
+
+### 1. Core brain
+Stable, low-change sections.
+
+Contains:
+- identity
+- role
+- constraints
+- style
+- tool contract
+- memory policy
+- safety boundaries
+
+### 2. Operational brain
+Reusable working modules.
+
+Contains:
+- SOPs
+- skills
+- templates
+- checklists
+- decision trees
+
+### 3. Memory brain
+Durable and selected knowledge.
+
+Contains:
+- critical memory
+- preferences
+- project state
+- corrections
+- episodic lessons
+- archive pointers
+
+### 4. Runtime working brain
+Compiled per request.
+
+Contains:
+- current task objective
+- selected memories
+- selected SOPs and skills
+- compact session summary
+- execution notes
+
+## Brain pack format
+
+Brains are versioned, portable assets.
+
+Recommended layout:
+
+```text
+brains/
+  agents/
+    <agent_key>/
+      manifest.json
+      core/
+        identity.md
+        constraints.md
+        style.md
+        tool_contract.md
+        memory_policy.md
+      operations/
+        sops/
+        skills/
+        templates/
+      routing/
+        routing_profile.json
+      eval/
+        baseline_metrics.json
+      deployment/
+        history.json
+```
+
+## Data architecture
+
+Ganglion is not only a database. It uses multiple storage patterns.
+
+### Relational database
+Use Postgres for:
+- agents
+- brain versions
+- brain sections
+- routing profiles
+- memory metadata
+- runs
+- feedback
+- evaluations
+- tuning cycles
+- deployments
+
+### Object storage
+Use local filesystem first, then S3-compatible storage later.
+
+Store:
+- full transcripts
+- compiled context snapshots
+- reports
+- artifacts
+- exported brain packs
+
+### Search layer
+Use Postgres FTS first, embeddings later.
+
+Search:
+- archived memories
+- run summaries
+- SOPs and skills
+- imported documents
+
+### Cache
+Use in-process cache first, Redis later.
+
+Cache:
+- active brain metadata
+- stable sections
+- hot retrieval results
+- recent session summaries
+
+## Cost optimisation strategy
+
+Ganglion reduces cost through structure, not through one-off prompt tricks.
+
+Key levers:
+- stable core brain sections
+- small per-task assembly
+- selective memory recall
+- task-specific brains
+- cheap-vs-strong routing
+- aggressive compaction of recent state
+- pruning of low-value memory
+
+Success metrics:
+- average input token size
+- cost per successful run
+- cheap-tier success rate
+- escalation rate
+- user correction rate
+- latency
+- repeated failure rate
+
+## Suggested repository layout
+
+```text
+ganglion/
+  pyproject.toml
+  README.md
+  DEVELOPMENT.md
+  .env.example
+  alembic.ini
+
+  ganglion/
+    __init__.py
+
+    antennule/
+      __init__.py
+      openclaw_adapter.py
+      request_adapter.py
+      response_adapter.py
+
+    pleon/
+      __init__.py
+      orchestrator.py
+      classifier.py
+
+    supra/
+      __init__.py
+      assembler.py
+      compiler.py
+      selectors.py
+
+    carapace/
+      __init__.py
+      registry.py
+      manifests.py
+      deployment.py
+
+    ventral/
+      __init__.py
+      service.py
+      selectors.py
+      writers.py
+      promotion.py
+      pruning.py
+
+    axon/
+      __init__.py
+      router.py
+      routing_profiles.py
+
+    peduncle/
+      __init__.py
+      provider_adapter.py
+      providers/
+
+    chela/
+      __init__.py
+      bus.py
+      contracts.py
+
+    mandible/
+      __init__.py
+      response_processor.py
+      validators.py
+
+    eyestalk/
+      __init__.py
+      service.py
+      metrics.py
+      patterns.py
+      replay.py
+
+    molt/
+      __init__.py
+      scheduler.py
+      service.py
+      candidates.py
+      experiments.py
+
+    shellbank/
+      __init__.py
+      object_store.py
+      exports.py
+      artifacts.py
+
+    forager/
+      __init__.py
+      search.py
+      index.py
+      ranking.py
+
+    storage/
+      __init__.py
+      db.py
+      models.py
+      repositories/
+        __init__.py
+        agents.py
+        brains.py
+        memory.py
+        runs.py
+        evals.py
+
+    config/
+      __init__.py
+      settings.py
+
+  brains/
+    shared/
+    agents/
+
+  artifacts/
+  migrations/
+  scripts/
+  tests/
+  docs/
+```
+
+## Python stack
+
+Recommended:
+- Python 3.12+
+- FastAPI
+- Pydantic
+- SQLAlchemy
+- Alembic
+- psycopg
+- APScheduler
+- structlog
+- cachetools
+- httpx
+- tenacity
+- pytest
+
+Optional later:
+- Redis
+- pgvector or vector abstraction
+- Typer
+- Rich
+- pandas
+- scikit-learn
+
+## MVP scope
+
+The first useful version should include:
+- Antennule request bridge
+- Pleon orchestrator
+- Supra brain assembler
+- Carapace brain registry
+- Ventral memory selector
+- Axon routing
+- Peduncle provider abstraction
+- Mandible response processing
+- Eyestalk run capture basics
+- Shellbank artifact storage
+
+That is enough to:
+- run structured brains
+- route efficiently
+- capture useful evidence
+- avoid prompt bloat
+
+## Acceptance criteria
+
+Ganglion v1 is successful when:
+1. OpenClaw can invoke Ganglion for a given agent.
+2. Ganglion can assemble a structured runtime brain.
+3. Multiple task-specific brains can be activated.
+4. Memory is selected selectively, not dumped wholesale.
+5. Routing can choose cheap vs strong model lanes.
+6. Runs are logged with cost, latency, and outcome metadata.
+7. Tuning cycles can be scheduled, even if initially conservative.
+8. Brain packs can be exported and versioned.
+
+## Naming conventions
+
+Use the anatomical module names as the primary engineering names.
+
+Examples:
+- `ganglion.pleon.orchestrator`
+- `ganglion.supra.assembler`
+- `ganglion.ventral.service`
+- `ganglion.axon.router`
+- `ganglion.molt.scheduler`
+
+Where additional clarity is needed, use the anatomical name plus a descriptive file:
+- `ganglion/mandible/response_processor.py`
+- `ganglion/carapace/deployment.py`
+
+## Long-term direction
+
+Ganglion should grow into a durable brain asset platform where:
+- task-specific brains become reusable working capital
+- routing becomes more cost-efficient over time
+- operational modules improve through evidence
+- exported brains become portable assets across runtimes and providers
+
+Ganglion is not just a feature. It is the structured nervous system behind OpenClaw.
