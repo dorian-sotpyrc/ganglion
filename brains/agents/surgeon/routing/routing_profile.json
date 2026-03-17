@@ -1,0 +1,4 @@
+{
+  "default_lane": "strong",
+  "fallback_lane": "cheap"
+}

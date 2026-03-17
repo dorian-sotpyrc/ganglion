@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "agent_key": "surgeon",
+  "brain_key": "surgeon-core",
+  "version": "0.1.0",
+  "extends": "shared",
+  "status": "active"
+}
