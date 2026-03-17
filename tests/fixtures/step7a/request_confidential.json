@@ -1,0 +1,10 @@
+{
+  "request_id": "req-fixture-confidential",
+  "agent_key": "surgeon",
+  "session_id": "sess-fixture-confidential",
+  "channel_type": "discord",
+  "channel_id": "chan-fixture-confidential",
+  "user_id": "user-fixture-confidential",
+  "task_text": "Review confidential token and password handling for internal service.",
+  "session_messages": ["Token issue seen in logs.", "Need secure review."]
+}

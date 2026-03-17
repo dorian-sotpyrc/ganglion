@@ -5,6 +5,8 @@ from pathlib import Path
 
 from ganglion.antennule.request_adapter import RunRequest
 from ganglion.axon.router import RoutingDecision, select_route
+from ganglion.carapace.deployment import DeploymentManager
+from ganglion.eyestalk.costs import estimate_cost
 from ganglion.mandible.response_processor import RunResponse, process_response
 from ganglion.peduncle.provider_adapter import ProviderAdapter
 from ganglion.pleon.classifier import TaskClassification, classify_task
@@ -31,9 +33,16 @@ class Orchestrator:
         self.provider_adapter = ProviderAdapter()
         self.memory_service = MemoryService()
         self.artifact_writer = ArtifactWriter(self.repo_root / "artifacts")
+        self.deployment_manager = DeploymentManager(self.repo_root / "artifacts" / "deployments")
 
     def build_runtime_package(self, request: RunRequest) -> RuntimePackage:
         compiled = compile_brain(self.repo_root, request.agent_key)
+        self.deployment_manager.record_deployment(
+            agent_key=request.agent_key,
+            version="runtime-current",
+            checksum=compiled.checksum,
+        )
+
         classification = classify_task(request.task_text, request.risk_hint)
         routing = select_route(
             classification=classification,
@@ -77,6 +86,14 @@ class Orchestrator:
             f"Task: {request.task_text}"
         )
 
+        cost = estimate_cost(
+            provider=provider_result.provider,
+            model=provider_result.model,
+            task_text=request.task_text,
+            response_text=message,
+            latency_ms=1200 if not provider_result.used_fallback else 1800,
+        )
+
         artifact_path = self.artifact_writer.write_run_artifact(
             run_id=request.session_id,
             payload={
@@ -94,6 +111,14 @@ class Orchestrator:
                     "episodic_count": len(runtime.memory_bundle["episodic"]),
                     "session_summary": runtime.memory_bundle["session_summary"],
                 },
+                "cost": {
+                    "provider": cost.provider,
+                    "model": cost.model,
+                    "estimated_input_tokens": cost.estimated_input_tokens,
+                    "estimated_output_tokens": cost.estimated_output_tokens,
+                    "estimated_cost_usd": cost.estimated_cost_usd,
+                    "latency_ms": cost.latency_ms,
+                },
             },
         )
 
@@ -105,7 +130,7 @@ class Orchestrator:
             message=message,
             metadata={
                 "execution_note": runtime.execution_note,
-                "mode": "routed-mock",
+                "mode": "integration-ready-routed-mock",
                 "classification": {
                     "complexity": runtime.classification.complexity,
                     "confidentiality": runtime.classification.confidentiality,
@@ -126,6 +151,14 @@ class Orchestrator:
                     "critical": [m.text for m in runtime.memory_bundle["critical"]],
                     "episodic": [m.text for m in runtime.memory_bundle["episodic"]],
                     "session_summary": runtime.memory_bundle["session_summary"],
+                },
+                "cost": {
+                    "provider": cost.provider,
+                    "model": cost.model,
+                    "estimated_input_tokens": cost.estimated_input_tokens,
+                    "estimated_output_tokens": cost.estimated_output_tokens,
+                    "estimated_cost_usd": cost.estimated_cost_usd,
+                    "latency_ms": cost.latency_ms,
                 },
                 "artifact_path": str(artifact_path),
             },

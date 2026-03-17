@@ -1,0 +1,10 @@
+{
+  "request_id": "req-fixture-normal",
+  "agent_key": "surgeon",
+  "session_id": "sess-fixture-normal",
+  "channel_type": "discord",
+  "channel_id": "chan-fixture-normal",
+  "user_id": "user-fixture-normal",
+  "task_text": "Summarise service restart findings.",
+  "session_messages": ["Service restarted.", "Need short summary."]
+}
