@@ -8,7 +8,9 @@ from ganglion.axon.router import RoutingDecision, select_route
 from ganglion.mandible.response_processor import RunResponse, process_response
 from ganglion.peduncle.provider_adapter import ProviderAdapter
 from ganglion.pleon.classifier import TaskClassification, classify_task
+from ganglion.shellbank.artifacts import ArtifactWriter
 from ganglion.supra.compiler import compile_brain
+from ganglion.ventral.service import MemoryService
 
 
 @dataclass(frozen=True)
@@ -20,12 +22,15 @@ class RuntimePackage:
     execution_note: str
     classification: TaskClassification
     routing: RoutingDecision
+    memory_bundle: dict
 
 
 class Orchestrator:
     def __init__(self, repo_root: str | Path) -> None:
         self.repo_root = Path(repo_root)
         self.provider_adapter = ProviderAdapter()
+        self.memory_service = MemoryService()
+        self.artifact_writer = ArtifactWriter(self.repo_root / "artifacts")
 
     def build_runtime_package(self, request: RunRequest) -> RuntimePackage:
         compiled = compile_brain(self.repo_root, request.agent_key)
@@ -35,6 +40,11 @@ class Orchestrator:
             requested_lane=request.requested_mode,
             requested_provider=request.raw_payload.get("requested_provider"),
             requested_model=request.raw_payload.get("requested_model"),
+        )
+        memory_bundle = self.memory_service.memory_bundle(
+            request.agent_key,
+            request.task_text,
+            request.session_messages,
         )
         execution_note = (
             f"Prepared routed execution for agent={request.agent_key} "
@@ -48,6 +58,7 @@ class Orchestrator:
             execution_note=execution_note,
             classification=classification,
             routing=routing,
+            memory_bundle=memory_bundle,
         )
 
     def run(self, request: RunRequest) -> RunResponse:
@@ -64,6 +75,26 @@ class Orchestrator:
             f"Prepared execution for {request.agent_key}. "
             f"Route: {provider_result.provider}/{provider_result.model}. "
             f"Task: {request.task_text}"
+        )
+
+        artifact_path = self.artifact_writer.write_run_artifact(
+            run_id=request.session_id,
+            payload={
+                "agent_key": request.agent_key,
+                "task_text": request.task_text,
+                "compiled_checksum": runtime.compiled_checksum,
+                "routing": {
+                    "lane": runtime.routing.lane,
+                    "provider": provider_result.provider,
+                    "model": provider_result.model,
+                    "used_fallback": provider_result.used_fallback,
+                },
+                "memory": {
+                    "critical_count": len(runtime.memory_bundle["critical"]),
+                    "episodic_count": len(runtime.memory_bundle["episodic"]),
+                    "session_summary": runtime.memory_bundle["session_summary"],
+                },
+            },
         )
 
         return process_response(
@@ -91,5 +122,11 @@ class Orchestrator:
                     "fallback_provider": runtime.routing.fallback_provider,
                     "fallback_model": runtime.routing.fallback_model,
                 },
+                "memory": {
+                    "critical": [m.text for m in runtime.memory_bundle["critical"]],
+                    "episodic": [m.text for m in runtime.memory_bundle["episodic"]],
+                    "session_summary": runtime.memory_bundle["session_summary"],
+                },
+                "artifact_path": str(artifact_path),
             },
         )

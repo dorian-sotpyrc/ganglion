@@ -16,6 +16,7 @@ class RunRequest:
     priority_hint: str | None = None
     risk_hint: str | None = None
     requested_mode: str | None = None
+    session_messages: list[str] = field(default_factory=list)
     raw_payload: dict[str, Any] = field(default_factory=dict)
 
 
@@ -40,5 +41,6 @@ def adapt_openclaw_request(payload: dict[str, Any]) -> RunRequest:
         priority_hint=payload.get("priority_hint"),
         risk_hint=payload.get("risk_hint"),
         requested_mode=payload.get("requested_mode"),
+        session_messages=list(payload.get("session_messages", [])),
         raw_payload=payload,
     )
