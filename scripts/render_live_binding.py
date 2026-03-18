@@ -31,6 +31,19 @@ def main() -> None:
     repo_root = REPO_ROOT
     agent_key = str(payload.get("agent_key") or "agent").strip() or "agent"
 
+    if not payload.get("channel_id"):
+        session_id = str(payload.get("session_id") or "")
+        metadata = payload.get("metadata") or {}
+        derived_channel_id = ""
+        if isinstance(metadata, dict):
+            derived_channel_id = str(metadata.get("channel_id") or metadata.get("conversation_id") or "")
+        if not derived_channel_id and session_id:
+            marker = "channel:"
+            if marker in session_id:
+                derived_channel_id = session_id.split(marker, 1)[1].split(":", 1)[0]
+        if derived_channel_id:
+            payload["channel_id"] = derived_channel_id
+
     result = handle_openclaw_request(repo_root, payload)
     metadata = result.get("metadata", {})
     memory = metadata.get("memory", {})

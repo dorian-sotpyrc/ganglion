@@ -63,3 +63,31 @@ def test_render_live_binding_uses_imported_agent_state(repo_root: Path = Path(__
     assert "Ganglion Pilot Context" in out["rewrite"]
     assert "evidence-first environment specialist" in out["rewrite"]
     assert "confidential host issue" in out["rewrite"]
+
+
+def test_render_live_binding_derives_missing_channel_id(repo_root: Path = Path(__file__).resolve().parents[2]) -> None:
+    payload = {
+        "request_id": "req-2",
+        "agent_key": "surgeon",
+        "session_id": "agent:surgeon:discord:channel:1234567890",
+        "channel_type": "discord",
+        "user_id": "user-1",
+        "task_text": "Check host posture.",
+        "session_messages": ["Check host posture."],
+        "requested_model": "gpt-5.4",
+        "requested_provider": "openai-codex",
+        "metadata": {"source": "test"},
+    }
+    payload_path = repo_root / "artifacts" / "test_render_live_binding_missing_channel.json"
+    payload_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    proc = subprocess.run(
+        [sys.executable, str(repo_root / "scripts" / "render_live_binding.py"), str(payload_path)],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    out = json.loads(proc.stdout)
+    assert out["ok"] is True
+    assert "Ganglion Pilot Context" in out["rewrite"]
