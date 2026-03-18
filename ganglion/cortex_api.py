@@ -28,6 +28,9 @@ class BrainOverview:
     session_compaction_count: int
     private_strong_runs_pct: float | None
     unsafe_override_rejections: int
+    actual_input_tokens_24h: float | None
+    actual_output_tokens_24h: float | None
+    actual_total_tokens_24h: float | None
     actual_cost_usd_24h: float | None
     cost_per_successful_run: float | None
     latency_p95_ms: float | None
@@ -96,7 +99,7 @@ class CortexMetricsService:
             return None
         return rows[-1].get("compiled_checksum")
 
-    def _actual_cost_24h(self, rows: list[dict[str, Any]]) -> float | None:
+    def _actual_metric_24h(self, rows: list[dict[str, Any]], key: str) -> float | None:
         now = datetime.now(timezone.utc)
         total = 0.0
         seen_actual = False
@@ -111,8 +114,8 @@ class CortexMetricsService:
             if (now - ts).total_seconds() > 86400:
                 continue
             actual = row.get("actual_metrics") or {}
-            if "cost_usd" in actual and actual.get("cost_usd") is not None:
-                total += float(actual.get("cost_usd") or 0.0)
+            if key in actual and actual.get(key) is not None:
+                total += float(actual.get(key) or 0.0)
                 seen_actual = True
         return round(total, 6) if seen_actual else None
 
@@ -191,7 +194,10 @@ class CortexMetricsService:
         rows = self._rows_for_agent(agent_key)
         traces = self._traces_for_agent(agent_key)
         success_rate = self._success_rate(rows)
-        actual_cost_24h = self._actual_cost_24h(rows)
+        actual_input_24h = self._actual_metric_24h(rows, "input_tokens")
+        actual_output_24h = self._actual_metric_24h(rows, "output_tokens")
+        actual_total_24h = self._actual_metric_24h(rows, "total_tokens")
+        actual_cost_24h = self._actual_metric_24h(rows, "cost_usd")
         successful_runs = max(1, sum(1 for r in rows if not r.get("routing", {}).get("used_fallback"))) if rows else 0
         cost_per_success = round(actual_cost_24h / successful_runs, 6) if actual_cost_24h is not None and successful_runs else None
         latest_run_at = rows[-1].get("_written_at") if rows else None
@@ -213,6 +219,9 @@ class CortexMetricsService:
             session_compaction_count=self._session_compaction_count(agent_key),
             private_strong_runs_pct=self._private_strong_pct(rows),
             unsafe_override_rejections=self._unsafe_override_rejections(rows),
+            actual_input_tokens_24h=actual_input_24h,
+            actual_output_tokens_24h=actual_output_24h,
+            actual_total_tokens_24h=actual_total_24h,
             actual_cost_usd_24h=actual_cost_24h,
             cost_per_successful_run=cost_per_success,
             latency_p95_ms=self._latency_p95(rows),

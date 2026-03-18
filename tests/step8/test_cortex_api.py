@@ -66,6 +66,9 @@ def test_cortex_metrics_reads_actual_metrics(tmp_path: Path) -> None:
     assert overview.deployment_revision == "abc123"
     assert overview.skills_count == 1
     assert overview.session_compaction_count == 1
+    assert overview.actual_input_tokens_24h == 10.0
+    assert overview.actual_output_tokens_24h == 20.0
+    assert overview.actual_total_tokens_24h == 30.0
     assert overview.actual_cost_usd_24h == 0.22
     assert overview.latency_p95_ms == 321.0
     assert overview.trace_coverage_rate == 1.0
