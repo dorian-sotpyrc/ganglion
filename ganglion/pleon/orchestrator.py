@@ -33,7 +33,7 @@ class Orchestrator:
     def __init__(self, repo_root: str | Path) -> None:
         self.repo_root = Path(repo_root)
         self.provider_adapter = ProviderAdapter()
-        self.memory_service = MemoryService()
+        self.memory_service = MemoryService(self.repo_root)
         self.artifact_writer = ArtifactWriter(self.repo_root / "artifacts")
         self.deployment_manager = DeploymentManager(self.repo_root / "artifacts" / "deployments")
         self.trace_writer = TraceWriter(self.repo_root / "artifacts" / "traces")

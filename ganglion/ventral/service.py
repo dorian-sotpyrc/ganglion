@@ -17,7 +17,8 @@ class MemoryItem:
 
 
 class MemoryService:
-    def __init__(self) -> None:
+    def __init__(self, repo_root: str | Path | None = None) -> None:
+        self.repo_root = Path(repo_root) if repo_root else None
         self._critical: dict[str, list[MemoryItem]] = {
             "surgeon": [
                 MemoryItem(
@@ -50,14 +51,60 @@ class MemoryService:
                 ),
             ]
         }
+        self._imported_cache: dict[str, dict[str, list[MemoryItem]]] = {}
+
+    def _imported_memory_path(self, agent_key: str) -> Path | None:
+        if not self.repo_root:
+            return None
+        return self.repo_root / "artifacts" / "imported_state" / agent_key / "memory_bundle.json"
+
+    def _load_imported_memory(self, agent_key: str) -> dict[str, list[MemoryItem]]:
+        if agent_key in self._imported_cache:
+            return self._imported_cache[agent_key]
+
+        empty = {"critical": [], "episodic": []}
+        path = self._imported_memory_path(agent_key)
+        if not path or not path.exists():
+            self._imported_cache[agent_key] = empty
+            return empty
+
+        payload = json.loads(path.read_text(encoding="utf-8"))
+
+        def parse_items(kind: str) -> list[MemoryItem]:
+            items = []
+            for idx, raw in enumerate(payload.get(kind, []), start=1):
+                text = str(raw.get("text", "")).strip()
+                if not text:
+                    continue
+                items.append(
+                    MemoryItem(
+                        memory_id=str(raw.get("memory_id") or f"imported-{kind}-{idx:03d}"),
+                        memory_type=kind[:-1] if kind.endswith("s") else kind,
+                        text=text,
+                        confidence=float(raw.get("confidence", 0.9)),
+                        tags=[str(t) for t in raw.get("tags", [])],
+                        source=str(raw.get("source", "imported")),
+                    )
+                )
+            return items
+
+        loaded = {
+            "critical": parse_items("critical"),
+            "episodic": parse_items("episodic"),
+        }
+        self._imported_cache[agent_key] = loaded
+        return loaded
 
     def get_critical_memory(self, agent_key: str) -> list[MemoryItem]:
-        return list(self._critical.get(agent_key, []))
+        imported = self._load_imported_memory(agent_key)
+        return list(imported["critical"] or self._critical.get(agent_key, []))
 
     def get_relevant_episodic_memory(self, agent_key: str, task_text: str, limit: int = 3) -> list[MemoryItem]:
         words = {w.strip(".,:;!?()[]{}").lower() for w in task_text.split() if w.strip()}
+        imported = self._load_imported_memory(agent_key)
+        source_items = imported["episodic"] or self._episodic.get(agent_key, [])
         candidates = []
-        for item in self._episodic.get(agent_key, []):
+        for item in source_items:
             score = 0
             for tag in item.tags:
                 if tag.lower() in words:

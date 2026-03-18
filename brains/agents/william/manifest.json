@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "agent_key": "william",
+  "brain_key": "william-security",
+  "version": "0.1.0-pilot",
+  "extends": "shared",
+  "status": "active"
+}

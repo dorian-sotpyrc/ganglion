@@ -532,3 +532,26 @@ Ganglion can now show:
 - how a given brain is performing over multiple runs
 
 This creates the basis for future dashboard visualisation and stronger learning/performance comparison.
+
+---
+
+## Step 8A: Legacy OpenClaw state import for pilot canaries
+
+**Status:** [x] Completed
+
+### Scope added
+- file-backed imported memory bundles for existing OpenClaw agents
+- additive import utility for workspace memory, legacy agent memory, and session transcript seeds
+- William pilot brain scaffold for first canary work
+
+### Implemented
+- imported-state loading in `ganglion/ventral/service.py`
+- import utility `scripts/import_openclaw_agent_state.py`
+- William pilot brain under `brains/agents/william/`
+- imported-state tests in `tests/step8/test_imported_state.py`
+
+### Practical purpose
+This closes a real pilot gap:
+- existing patient agents do not need to start cold inside Ganglion
+- legacy memory and session continuity can be carried into shadow-mode canaries
+- migration remains additive and auditable rather than mutating original OpenClaw state

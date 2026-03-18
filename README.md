@@ -1053,3 +1053,35 @@ git add .
 git commit -m "Add traceability and brain performance visibility updates"
 git push
 ```
+
+---
+
+## Pilot migration from legacy OpenClaw agent state
+
+Ganglion can now ingest legacy OpenClaw agent state into a file-backed imported memory bundle for pilot work.
+
+Current pilot utility:
+
+```bash
+python scripts/import_openclaw_agent_state.py \
+  --repo-root /path/to/ganglion \
+  --agent-key william \
+  --workspace-dir /path/to/workspace-william \
+  --agent-root /path/to/agents/william
+```
+
+This produces:
+
+```text
+artifacts/imported_state/<agent_key>/memory_bundle.json
+```
+
+Current migration mapping:
+- workspace `MEMORY.md` -> critical memory
+- legacy `memory.json` -> structured critical memory
+- latest session transcript -> episodic memory seeds
+- session messages remain preserved in raw source files; the import is additive and auditable
+
+Current intended use:
+- shadow-mode pilots for existing OpenClaw agents
+- continuity-preserving canary evaluation before full runtime integration
