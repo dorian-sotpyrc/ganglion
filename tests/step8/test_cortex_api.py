@@ -26,7 +26,7 @@ def test_openclaw_strict_rejects_bad_agent_key() -> None:
         raise AssertionError("Expected EnvelopeValidationError")
 
 
-def test_cortex_metrics_reads_actual_metrics(tmp_path: Path) -> None:
+def test_cortex_metrics_reads_actual_metrics(tmp_path: Path, monkeypatch) -> None:
     runs = tmp_path / "artifacts" / "runs"
     traces = tmp_path / "artifacts" / "traces"
     runs.mkdir(parents=True)
@@ -45,6 +45,7 @@ def test_cortex_metrics_reads_actual_metrics(tmp_path: Path) -> None:
             "request_id": "req-1",
             "agent_key": "surgeon",
             "compiled_checksum": "checksum-1",
+            "compiled_prompt": "x" * 512,
             "task_text": "check host",
             "routing": {"lane": "private_strong", "used_fallback": False, "routing_reason": ["requested_provider_rejected_due_to_confidentiality"]},
             "memory": {"critical_count": 2, "episodic_count": 1},
@@ -59,6 +60,7 @@ def test_cortex_metrics_reads_actual_metrics(tmp_path: Path) -> None:
     (runs / "sess-1.json").write_text(json.dumps(run_payload), encoding="utf-8")
     (traces / "req-1.json").write_text(json.dumps(trace_payload), encoding="utf-8")
 
+    monkeypatch.setattr(CortexMetricsService, "_fetch_agent_logs", lambda self, agent_key: [])
     svc = CortexMetricsService(tmp_path)
     overview = svc.brain_overview("surgeon")
 
@@ -74,3 +76,51 @@ def test_cortex_metrics_reads_actual_metrics(tmp_path: Path) -> None:
     assert overview.trace_coverage_rate == 1.0
     assert overview.private_strong_runs_pct == 1.0
     assert overview.unsafe_override_rejections == 1
+    assert overview.total_brain_kb is not None
+    assert overview.compiled_brain_size_chars == 512
+
+
+def test_cortex_falls_back_to_openclaw_agent_logs(tmp_path: Path, monkeypatch) -> None:
+    runs = tmp_path / "artifacts" / "runs"
+    traces = tmp_path / "artifacts" / "traces"
+    runs.mkdir(parents=True)
+    traces.mkdir(parents=True)
+    (tmp_path / ".deployed_sha").write_text("abc123\n", encoding="utf-8")
+    run_payload = {
+        "written_at": "2026-03-18T05:00:00+00:00",
+        "payload": {
+            "request_id": "req-1",
+            "agent_key": "surgeon",
+            "compiled_checksum": "checksum-1",
+            "task_text": "check host",
+            "routing": {"lane": "cheap", "used_fallback": False, "routing_reason": []},
+            "memory": {"critical_count": 1, "episodic_count": 0},
+            "cost": {"estimated_cost_usd": 0.12, "latency_ms": 999},
+            "actual_metrics": {"cost_usd": None, "latency_ms": None, "input_tokens": None, "output_tokens": None, "total_tokens": None},
+        },
+    }
+    (runs / "sess-1.json").write_text(json.dumps(run_payload), encoding="utf-8")
+    monkeypatch.setattr(
+        CortexMetricsService,
+        "_fetch_agent_logs",
+        lambda self, agent_key: [
+            {
+                "agent_name": "surgeon",
+                "created_at": "2026-03-18T05:00:02Z",
+                "duration_ms": 456,
+                "prompt_tokens": 11,
+                "completion_tokens": 22,
+                "total_tokens": 33,
+                "cost_usd": 0.44,
+                "meta": {"session_key": "sess-1"},
+            }
+        ],
+    )
+    svc = CortexMetricsService(tmp_path)
+    overview = svc.brain_overview("surgeon")
+    assert overview.actual_input_tokens_24h == 11.0
+    assert overview.actual_output_tokens_24h == 22.0
+    assert overview.actual_total_tokens_24h == 33.0
+    assert overview.actual_cost_usd_24h == 0.44
+    assert overview.cost_per_successful_run == 0.44
+    assert overview.latency_p95_ms == 456.0
