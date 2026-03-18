@@ -4,12 +4,13 @@ from pathlib import Path
 from typing import Any
 
 from ganglion.antennule.integration_contract import normalise_envelope
+from ganglion.openclaw_profile import OpenClawStrictPolicy
 from ganglion.antennule.request_adapter import adapt_openclaw_request
 from ganglion.pleon.orchestrator import Orchestrator
 
 
 def handle_openclaw_request(repo_root: str | Path, payload: dict[str, Any]) -> dict[str, Any]:
-    envelope = normalise_envelope(payload)
+    envelope = normalise_envelope(payload, OpenClawStrictPolicy())
 
     request_payload = {
         "agent_key": envelope.agent_key,

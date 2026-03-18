@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from ganglion.openclaw_profile import INTEGRATION_PROFILE_OPENCLAW_STRICT, OpenClawStrictPolicy
+
 
 @dataclass(frozen=True)
 class OpenClawEnvelope:
@@ -25,7 +27,8 @@ class EnvelopeValidationError(ValueError):
     pass
 
 
-def normalise_envelope(payload: dict[str, Any]) -> OpenClawEnvelope:
+def normalise_envelope(payload: dict[str, Any], policy: OpenClawStrictPolicy | None = None) -> OpenClawEnvelope:
+    policy = policy or OpenClawStrictPolicy()
     required = [
         "request_id",
         "agent_key",
@@ -35,9 +38,20 @@ def normalise_envelope(payload: dict[str, Any]) -> OpenClawEnvelope:
         "user_id",
         "task_text",
     ]
-    missing = [k for k in required if not payload.get(k)]
+    missing = [k for k in required if getattr(policy, f"require_{k}", False) and not payload.get(k)]
     if missing:
         raise EnvelopeValidationError(f"Missing envelope fields: {', '.join(missing)}")
+    metadata = payload.get("metadata", {})
+    if policy.require_metadata_dict and metadata is not None and not isinstance(metadata, dict):
+        raise EnvelopeValidationError("metadata must be a dict under openclaw_strict")
+    if policy.require_naming_conventions:
+        if any(ch.isspace() for ch in str(payload.get("agent_key", ""))):
+            raise EnvelopeValidationError("agent_key must not contain whitespace under openclaw_strict")
+        if "/" in str(payload.get("agent_key", "")):
+            raise EnvelopeValidationError("agent_key must not contain path separators under openclaw_strict")
+    payload = dict(payload)
+    payload["metadata"] = dict(metadata or {})
+    payload["metadata"].setdefault("integration_profile", INTEGRATION_PROFILE_OPENCLAW_STRICT)
 
     return OpenClawEnvelope(
         request_id=str(payload["request_id"]),

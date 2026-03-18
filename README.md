@@ -1056,6 +1056,38 @@ git push
 
 ---
 
+## Cortex API (brain performance surface)
+
+Ganglion now includes a small local read-only API for brain performance visibility.
+
+Run it with:
+
+```bash
+python scripts/run_cortex_api.py --repo-root /path/to/ganglion --host 127.0.0.1 --port 8765
+```
+
+Initial endpoints:
+- `GET /cortex/health`
+- `GET /cortex/brains`
+- `GET /cortex/brains/<agent_key>`
+
+The Cortex API is designed to expose a holistic brain view for optimisation work:
+- compiled checksum / deployment revision
+- success and task-completion rates
+- memory hit rate and average memory selection
+- skills count and session compaction count
+- routing safety metrics
+- actual cost and latency when provided by the integration
+- trace coverage
+
+For OpenClaw integrations, Ganglion now enforces a strict integration profile:
+- required envelope fields
+- metadata must be a dict
+- agent keys must follow normalized naming
+- integration profile marker is attached as `openclaw_strict`
+
+---
+
 ## Pilot migration from legacy OpenClaw agent state
 
 Ganglion can now ingest legacy OpenClaw agent state into a file-backed imported memory bundle for pilot work.

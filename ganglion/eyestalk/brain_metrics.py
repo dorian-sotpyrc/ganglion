@@ -47,8 +47,12 @@ class BrainMetricsService:
                 if r.get("classification", {}).get("confidentiality") == "confidential"
             )
             estimated_cost = sum(float(r.get("cost", {}).get("estimated_cost_usd", 0.0)) for r in rows)
+            actual_costs = [float(r.get("actual_metrics", {}).get("cost_usd")) for r in rows if r.get("actual_metrics", {}).get("cost_usd") is not None]
+            latencies = [float(r.get("actual_metrics", {}).get("latency_ms")) for r in rows if r.get("actual_metrics", {}).get("latency_ms") is not None]
+            if not latencies:
+                latencies = [int(r.get("cost", {}).get("latency_ms", 0)) for r in rows]
             avg_latency = (
-                sum(int(r.get("cost", {}).get("latency_ms", 0)) for r in rows) / total_runs
+                sum(latencies) / total_runs
                 if total_runs else 0.0
             )
             avg_episodic = (
@@ -67,6 +71,7 @@ class BrainMetricsService:
                 "confidential_runs": confidential_runs,
                 "confidential_rate": (confidential_runs / total_runs) if total_runs else 0.0,
                 "estimated_total_cost_usd": round(estimated_cost, 6),
+                "actual_total_cost_usd": round(sum(actual_costs), 6) if actual_costs else None,
                 "average_latency_ms": round(avg_latency, 2),
                 "average_episodic_memories_selected": round(avg_episodic, 2),
                 "average_critical_memories_selected": round(avg_critical, 2),

@@ -535,6 +535,33 @@ This creates the basis for future dashboard visualisation and stronger learning/
 
 ---
 
+## Step 8B: Strict OpenClaw profile + Cortex API
+
+**Status:** [x] Completed
+
+### Scope added
+- strict OpenClaw integration profile enforcement
+- canonical artifact/state naming helpers
+- Cortex API for read-only brain performance visibility
+- actual metric ingestion when integrations provide real tokens/cost/latency
+
+### Implemented
+- `ganglion/openclaw_profile.py`
+- strict envelope enforcement in `ganglion/antennule/integration_contract.py`
+- actual-metric passthrough in `ganglion/pleon/orchestrator.py`
+- Cortex metrics service in `ganglion/cortex_api.py`
+- Cortex HTTP runner in `scripts/run_cortex_api.py`
+- tests in `tests/step8/test_cortex_api.py`
+
+### Practical purpose
+This closes another operational gap:
+- OpenClaw integrations are validated more strictly
+- state/trace naming is more standardized and grep-friendly
+- dashboards can query a stable brain-performance surface instead of scraping raw artifacts
+- cost/latency metrics can move from estimated to actual when supplied by the integration
+
+---
+
 ## Step 8A: Legacy OpenClaw state import for pilot canaries
 
 **Status:** [x] Completed

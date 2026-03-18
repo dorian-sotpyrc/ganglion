@@ -99,11 +99,13 @@ class Orchestrator:
             latency_ms=1200 if not provider_result.used_fallback else 1800,
         )
 
+        actual_metrics = request.raw_payload.get("actual_metrics") if isinstance(request.raw_payload.get("actual_metrics"), dict) else {}
         run_payload = {
             "request_id": request_id,
             "agent_key": request.agent_key,
             "task_text": request.task_text,
             "compiled_checksum": runtime.compiled_checksum,
+            "integration_profile": request.raw_payload.get("metadata", {}).get("integration_profile", "openclaw_strict"),
             "classification": {
                 "complexity": runtime.classification.complexity,
                 "confidentiality": runtime.classification.confidentiality,
@@ -130,6 +132,13 @@ class Orchestrator:
                 "estimated_output_tokens": cost.estimated_output_tokens,
                 "estimated_cost_usd": cost.estimated_cost_usd,
                 "latency_ms": cost.latency_ms,
+            },
+            "actual_metrics": {
+                "input_tokens": actual_metrics.get("input_tokens"),
+                "output_tokens": actual_metrics.get("output_tokens"),
+                "total_tokens": actual_metrics.get("total_tokens"),
+                "cost_usd": actual_metrics.get("cost_usd"),
+                "latency_ms": actual_metrics.get("latency_ms"),
             },
         }
 
