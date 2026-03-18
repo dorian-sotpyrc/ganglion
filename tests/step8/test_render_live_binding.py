@@ -6,18 +6,18 @@ import sys
 from pathlib import Path
 
 
-def test_render_live_binding_uses_william_imported_state(repo_root: Path = Path(__file__).resolve().parents[2]) -> None:
-    imported = repo_root / "artifacts" / "imported_state" / "william"
+def test_render_live_binding_uses_imported_agent_state(repo_root: Path = Path(__file__).resolve().parents[2]) -> None:
+    imported = repo_root / "artifacts" / "imported_state" / "surgeon"
     imported.mkdir(parents=True, exist_ok=True)
     (imported / "memory_bundle.json").write_text(
         json.dumps(
             {
-                "agent_key": "william",
+                "agent_key": "surgeon",
                 "critical": [
                     {
                         "memory_id": "crit-1",
-                        "text": "William is a conservative, evidence-first security specialist.",
-                        "tags": ["security", "evidence"],
+                        "text": "Surgeon is a conservative, evidence-first environment specialist.",
+                        "tags": ["safety", "evidence"],
                         "source": "test",
                     }
                 ],
@@ -37,13 +37,13 @@ def test_render_live_binding_uses_william_imported_state(repo_root: Path = Path(
 
     payload = {
         "request_id": "req-1",
-        "agent_key": "william",
+        "agent_key": "surgeon",
         "session_id": "sess-1",
         "channel_type": "discord",
         "channel_id": "chan-1",
         "user_id": "user-1",
         "task_text": "Review this confidential host issue.",
-        "session_messages": ["Need a careful security answer."],
+        "session_messages": ["Need a careful answer."],
         "requested_model": "gpt-5.4",
         "requested_provider": "openai-codex",
         "metadata": {"source": "test"},
@@ -60,6 +60,6 @@ def test_render_live_binding_uses_william_imported_state(repo_root: Path = Path(
     )
     out = json.loads(proc.stdout)
     assert out["ok"] is True
-    assert "Ganglion William Pilot Context" in out["rewrite"]
-    assert "evidence-first security specialist" in out["rewrite"]
+    assert "Ganglion Pilot Context" in out["rewrite"]
+    assert "evidence-first environment specialist" in out["rewrite"]
     assert "confidential host issue" in out["rewrite"]

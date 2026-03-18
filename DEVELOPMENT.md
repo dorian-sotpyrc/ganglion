@@ -542,17 +542,18 @@ This creates the basis for future dashboard visualisation and stronger learning/
 ### Scope added
 - file-backed imported memory bundles for existing OpenClaw agents
 - additive import utility for workspace memory, legacy agent memory, and session transcript seeds
-- William pilot brain scaffold for first canary work
+- generic live-binding renderer support for agent pilots
 
 ### Implemented
 - imported-state loading in `ganglion/ventral/service.py`
 - import utility `scripts/import_openclaw_agent_state.py`
-- William pilot brain under `brains/agents/william/`
+- live-binding renderer `scripts/render_live_binding.py`
 - imported-state tests in `tests/step8/test_imported_state.py`
 
 ### Practical purpose
 This closes a real pilot gap:
-- existing patient agents do not need to start cold inside Ganglion
+- existing OpenClaw agents do not need to start cold inside Ganglion
 - legacy memory and session continuity can be carried into shadow-mode canaries
 - migration remains additive and auditable rather than mutating original OpenClaw state
-- a live pilot can inject Ganglion-built William context into OpenClaw turn generation without replacing the whole channel runtime
+- a live pilot can inject Ganglion-built agent context into OpenClaw turn generation without replacing the whole channel runtime
+- environment-specific agent definitions remain local to the deployment, not in the shared repo

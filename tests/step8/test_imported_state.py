@@ -6,21 +6,21 @@ from ganglion.ventral.service import MemoryService
 
 
 def test_imported_memory_bundle_is_loaded(tmp_path: Path) -> None:
-    imported = tmp_path / "artifacts" / "imported_state" / "william"
+    imported = tmp_path / "artifacts" / "imported_state" / "surgeon"
     imported.mkdir(parents=True)
     payload = {
-        "agent_key": "william",
+        "agent_key": "surgeon",
         "critical": [
             {
-                "memory_id": "w-crit-001",
-                "text": "William handles conservative security review.",
-                "tags": ["security", "william"],
+                "memory_id": "s-crit-001",
+                "text": "Surgeon handles conservative environment review.",
+                "tags": ["safety", "surgeon"],
                 "source": "test",
             }
         ],
         "episodic": [
             {
-                "memory_id": "w-epi-001",
+                "memory_id": "s-epi-001",
                 "text": "Previous host check reviewed firewall and SSH posture.",
                 "tags": ["host", "firewall", "ssh"],
                 "source": "test",
@@ -30,31 +30,31 @@ def test_imported_memory_bundle_is_loaded(tmp_path: Path) -> None:
     (imported / "memory_bundle.json").write_text(json.dumps(payload), encoding="utf-8")
 
     svc = MemoryService(tmp_path)
-    critical = svc.get_critical_memory("william")
-    episodic = svc.get_relevant_episodic_memory("william", "Review host firewall and ssh posture")
+    critical = svc.get_critical_memory("surgeon")
+    episodic = svc.get_relevant_episodic_memory("surgeon", "Review host firewall and ssh posture")
 
     assert critical
-    assert critical[0].text == "William handles conservative security review."
+    assert critical[0].text == "Surgeon handles conservative environment review."
     assert episodic
     assert "firewall" in episodic[0].text.lower()
 
 
-def test_handle_request_uses_imported_william_state(repo_root: Path = Path(__file__).resolve().parents[2]) -> None:
-    imported = repo_root / "artifacts" / "imported_state" / "william"
+def test_handle_request_uses_imported_agent_state(repo_root: Path = Path(__file__).resolve().parents[2]) -> None:
+    imported = repo_root / "artifacts" / "imported_state" / "surgeon"
     imported.mkdir(parents=True, exist_ok=True)
     bundle = {
-        "agent_key": "william",
+        "agent_key": "surgeon",
         "critical": [
             {
-                "memory_id": "w-crit-002",
-                "text": "William is an evidence-first security specialist.",
-                "tags": ["security", "evidence"],
+                "memory_id": "s-crit-002",
+                "text": "Surgeon is an evidence-first environment specialist.",
+                "tags": ["safety", "evidence"],
                 "source": "test",
             }
         ],
         "episodic": [
             {
-                "memory_id": "w-epi-002",
+                "memory_id": "s-epi-002",
                 "text": "A prior confidential host review required stronger routing.",
                 "tags": ["confidential", "host", "routing"],
                 "source": "test",
@@ -66,13 +66,13 @@ def test_handle_request_uses_imported_william_state(repo_root: Path = Path(__fil
     result = handle_openclaw_request(
         repo_root,
         {
-            "request_id": "req-william-test-001",
-            "agent_key": "william",
-            "session_id": "sess-william-test-001",
+            "request_id": "req-surgeon-test-001",
+            "agent_key": "surgeon",
+            "session_id": "sess-surgeon-test-001",
             "channel_type": "discord",
-            "channel_id": "chan-william-test-001",
+            "channel_id": "chan-surgeon-test-001",
             "user_id": "user-test-001",
-            "task_text": "Review this confidential host issue and outline security risks.",
+            "task_text": "Review this confidential host issue and outline risks.",
             "session_messages": ["Earlier host concern", "Need evidence-first review"],
             "requested_model": "gpt-5.4",
             "metadata": {"source": "test"},
@@ -80,6 +80,6 @@ def test_handle_request_uses_imported_william_state(repo_root: Path = Path(__fil
     )
 
     assert result["status"] == "ok"
-    assert result["agent_key"] == "william"
+    assert result["agent_key"] == "surgeon"
     assert result["metadata"]["memory"]["critical"]
-    assert "evidence-first security specialist" in " ".join(result["metadata"]["memory"]["critical"])
+    assert "evidence-first environment specialist" in " ".join(result["metadata"]["memory"]["critical"])

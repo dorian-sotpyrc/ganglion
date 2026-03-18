@@ -11,7 +11,6 @@ if str(REPO_ROOT) not in sys.path:
 from ganglion.antennule.openclaw_adapter import handle_openclaw_request
 
 
-MAX_COMPILED_CHARS = 2400
 MAX_MEMORY_ITEMS = 4
 MAX_ITEM_CHARS = 280
 
@@ -30,6 +29,7 @@ def main() -> None:
     payload_path = Path(sys.argv[1]).resolve()
     payload = json.loads(payload_path.read_text(encoding="utf-8"))
     repo_root = REPO_ROOT
+    agent_key = str(payload.get("agent_key") or "agent").strip() or "agent"
 
     result = handle_openclaw_request(repo_root, payload)
     metadata = result.get("metadata", {})
@@ -39,13 +39,12 @@ def main() -> None:
     critical = [shorten(str(x), MAX_ITEM_CHARS) for x in memory.get("critical", [])[:MAX_MEMORY_ITEMS]]
     episodic = [shorten(str(x), MAX_ITEM_CHARS) for x in memory.get("episodic", [])[:MAX_MEMORY_ITEMS]]
     session_summary = shorten(str(memory.get("session_summary", "")), 600)
-
-    compiled_text = shorten(str(result.get("message", "")), 500)
+    execution_note = shorten(str(result.get("message", "")), 500)
     runtime_checksum = str(result.get("compiled_checksum", ""))
 
     lines = [
-        "[Ganglion William Pilot Context]",
-        "Use the following as William's active brain/memory/routing context for this turn.",
+        "[Ganglion Pilot Context]",
+        f"Use the following as {agent_key}'s active brain/memory/routing context for this turn.",
         "Do not mention Ganglion unless the user explicitly asks.",
         f"Brain checksum: {runtime_checksum}",
         f"Routing lane: {routing.get('lane', 'unknown')}",
@@ -60,12 +59,12 @@ def main() -> None:
         lines.extend(f"- {item}" for item in episodic)
     if session_summary:
         lines.append(f"Session summary: {session_summary}")
-    if compiled_text:
-        lines.append(f"Execution note: {compiled_text}")
+    if execution_note:
+        lines.append(f"Execution note: {execution_note}")
 
     lines.extend(
         [
-            "Answer as William in his normal voice, using the Ganglion context above to guide memory and judgment.",
+            f"Answer as {agent_key} in the agent's normal voice, using the Ganglion context above to guide memory and judgment.",
             "--- END GANGLION PILOT CONTEXT ---",
             payload.get("task_text", ""),
         ]

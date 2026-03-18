@@ -1065,9 +1065,9 @@ Current pilot utility:
 ```bash
 python scripts/import_openclaw_agent_state.py \
   --repo-root /path/to/ganglion \
-  --agent-key william \
-  --workspace-dir /path/to/workspace-william \
-  --agent-root /path/to/agents/william
+  --agent-key <agent_key> \
+  --workspace-dir /path/to/workspace-<agent_key> \
+  --agent-root /path/to/agents/<agent_key>
 ```
 
 This produces:
@@ -1085,4 +1085,4 @@ Current migration mapping:
 Current intended use:
 - shadow-mode pilots for existing OpenClaw agents
 - continuity-preserving canary evaluation before full runtime integration
-- William live pilot prompt injection via a rollbackable OpenClaw binding shim
+- agent-specific live pilot prompt injection via a rollbackable OpenClaw binding shim, with environment-specific agent definitions kept out of the shared repo
