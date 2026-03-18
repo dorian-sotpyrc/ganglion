@@ -555,3 +555,4 @@ This closes a real pilot gap:
 - existing patient agents do not need to start cold inside Ganglion
 - legacy memory and session continuity can be carried into shadow-mode canaries
 - migration remains additive and auditable rather than mutating original OpenClaw state
+- a live pilot can inject Ganglion-built William context into OpenClaw turn generation without replacing the whole channel runtime

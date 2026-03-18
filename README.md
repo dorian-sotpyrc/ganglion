@@ -1085,3 +1085,4 @@ Current migration mapping:
 Current intended use:
 - shadow-mode pilots for existing OpenClaw agents
 - continuity-preserving canary evaluation before full runtime integration
+- William live pilot prompt injection via a rollbackable OpenClaw binding shim
