@@ -1,0 +1,18 @@
+{
+  "request_id": "req_phase2_fixture_001",
+  "conversation_id": "channel:test-william",
+  "timestamp": "2026-03-19T02:30:00Z",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Ping Ganglion"
+    }
+  ],
+  "provider_hint": "openai",
+  "model_hint": "gpt-5.4",
+  "metadata": {
+    "source_system": "openclaw",
+    "channel": "discord",
+    "evidence_mode": "write_local"
+  }
+}

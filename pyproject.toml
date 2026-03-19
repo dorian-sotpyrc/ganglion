@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ganglion"
+version = "0.2.0"
+description = "Ganglion zero-base rebuild Phase 2 minimum packet spine"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
