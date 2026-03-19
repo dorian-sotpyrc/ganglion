@@ -22,7 +22,35 @@ def main() -> None:
         if channel_id:
             payload["channel_id"] = channel_id
 
+    print(
+        json.dumps(
+            {
+                "event": "ganglion.run_started",
+                "request_id": payload.get("request_id"),
+                "agent_key": payload.get("agent_key"),
+                "session_id": payload.get("session_id"),
+                "channel_id": payload.get("channel_id"),
+                "requested_provider": payload.get("requested_provider"),
+                "requested_model": payload.get("requested_model"),
+            }
+        ),
+        file=sys.stderr,
+    )
     result = handle_live_binding(REPO_ROOT, payload)
+    print(
+        json.dumps(
+            {
+                "event": "ganglion.rewrite_ready",
+                "request_id": payload.get("request_id"),
+                "agent_key": payload.get("agent_key"),
+                "trace_id": result.get("trace_id"),
+                "run_id": result.get("run_id"),
+                "artifact_path": (result.get("ganglion_metadata") or {}).get("artifact_path"),
+                "compiled_checksum": (result.get("ganglion_metadata") or {}).get("compiled_checksum"),
+            }
+        ),
+        file=sys.stderr,
+    )
     sys.stdout.write(
         json.dumps(
             {
