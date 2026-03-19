@@ -1,62 +1,76 @@
-# Ganglion Zero-Base Roadmap
+# Ganglion Refocus Roadmap
 
-## Phase 0 — archive + explicit reset baseline
+## Phase A — strategic refocus + repo truthfulness
 
 Goal:
-- separate legacy implementation from active rebuild posture
+- align repo narrative, plan, and active surface with the new role as a lossless-claw companion
 
 Deliverables:
-- `RESET_BRIEF.md`
-- legacy inventory report
-- phase 0 completion report
-- fresh `zero-base/` working root
+- updated README
+- updated reset/governing brief
+- updated active posture docs
+- explicit statement of what prototype code is transitional vs active
+- development plan for the new direction
 
 Exit criteria:
-- legacy surface explicitly marked archive/reference only
-- active rebuild root named and created
-- no ambiguity about current scope
+- no top-level docs present Ganglion as a competing memory engine
+- repo posture clearly states lossless-claw is primary memory
+- next implementation steps are operator-tool oriented
 
-## Phase 1 — contracts and conventions
+## Phase B — visibility and brain scan specifications
 
 Goal:
-- define the minimum rebuild contract pack before implementation
+- define the minimum operator-facing interfaces for inspecting lossless-claw state
 
 Deliverables:
-- envelope contract: OpenClaw -> Ganglion
-- provider request/response contract
-- return packet contract: Ganglion -> OpenClaw
-- path and naming conventions
-- evidence rules and fixture format
+- visibility report spec
+- brain scan spec
+- backup/export artifact spec
+- tuning recommendation spec
+- before/after evidence format
 
 Exit criteria:
-- packet inputs/outputs are specified without depending on legacy code
-- one canonical path for the minimum spine is defined
+- operator can understand what the first useful Ganglion outputs will be
+- interfaces are clear enough to implement without product drift
 
-## Phase 2 — minimum packet spine
+## Phase C — minimum useful implementation
 
 Goal:
-- prove the narrowest viable end-to-end path
+- deliver the first real operator value around the existing lossless-claw deployment
 
-Target path:
-- OpenClaw input packet
-- Ganglion normalization
-- provider invocation
-- Ganglion response normalization
-- OpenClaw return packet
+Target features:
+- inspect current session/agent memory posture
+- produce a brain scan report
+- export a safe backup/snapshot artifact
+- generate tuning recommendations from observed posture
 
 Required evidence:
-- fixture input
-- exact normalized packet
-- provider request payload
-- provider response payload
-- final return packet
-- test/log transcript
-- pass/fail report
+- sample scan input
+- produced visibility report
+- produced backup artifact
+- produced optimisation recommendation report
+- tests or fixture-driven proof
 
-Out of scope until Phase 2 evidence exists:
-- memory selection
-- routing complexity
-- tuning/evals
-- dashboard/Cortex surfaces
-- deployment registry work
-- import/export machinery
+## Phase D — safe tuning workflows
+
+Goal:
+- move from read-only inspection to controlled optimisation support
+
+Target features:
+- validate current lossless-claw settings
+- compare current settings to recommended profile
+- produce safe change plans
+- optionally write config patches with explicit rollback path
+
+Required evidence:
+- before/after config diff
+- rollback artifact
+- validation output
+- operator-facing summary of expected tradeoffs
+
+## Out of scope unless explicitly revived
+
+- replacing lossless-claw as the memory engine
+- building a broad speculative brain runtime first
+- general provider middleware expansion as the primary project identity
+- large dashboard ambitions before useful operator tooling exists

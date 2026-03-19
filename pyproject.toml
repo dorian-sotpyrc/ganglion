@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ganglion"
 version = "0.2.0"
-description = "Ganglion zero-base rebuild Phase 2 minimum packet spine"
+description = "Ganglion lossless-claw visibility, brain scanner, backup, and memory optimisation companion"
 requires-python = ">=3.10"
 
 [tool.setuptools.packages.find]

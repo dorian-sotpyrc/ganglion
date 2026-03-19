@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Defines the canonical runtime packet created after ingress normalization and before provider adaptation.
+Defines the canonical internal work packet Ganglion constructs after ingress normalization.
+
+In the new design intent, this packet represents an operator-tool workflow rather than a mandatory provider-execution envelope.
 
 ## Boundary owner
 
@@ -18,21 +20,19 @@ Defines the canonical runtime packet created after ingress normalization and bef
   "run_id": "run_20260319_01f8ab2c9d7e",
   "source_system": "openclaw",
   "ingress_timestamp": "2026-03-19T01:54:00Z",
-  "normalized_messages": [
-    {
-      "index": 0,
-      "role": "user",
-      "content": "hello"
-    }
-  ],
-  "provider_target": "openai",
-  "model_target": "gpt-5.4",
-  "routing_mode": "direct_single_provider",
+  "operation": "brain_scan",
+  "target": {
+    "agent_id": "william",
+    "session_id": "agent:william:discord:channel:1480766516810088480"
+  },
   "evidence_mode": "write_local",
   "metadata": {
     "request_id": "req_01hxyz...",
-    "conversation_id": "channel:1480766516810088480",
     "channel": "discord"
+  },
+  "options": {
+    "include_summary_depth": true,
+    "include_backup_plan": true
   }
 }
 ```
@@ -44,55 +44,38 @@ Defines the canonical runtime packet created after ingress normalization and bef
 - `run_id`
 - `source_system`
 - `ingress_timestamp`
-- `normalized_messages`
-- `provider_target`
-- `model_target`
-- `routing_mode`
+- `operation`
+- `target`
 - `evidence_mode`
 - `metadata`
 
 ## Field rules
 
 ### `packet_version`
-- fixed string in Stage 1: `v1alpha1`
+- fixed string in this phase: `v1alpha1`
 
-### `trace_id`
-- globally unique trace identifier
-- must be stable across all artifacts for a run
+### `operation`
+Allowed values:
+- `visibility_report`
+- `brain_scan`
+- `backup_plan`
+- `optimisation_review`
 
-### `run_id`
-- unique run identifier
-- one run id per execution attempt
-
-### `normalized_messages`
-Each item must include:
-- `index` — zero-based integer
-- `role` — normalized role string
-- `content` — normalized string content
-
-### `provider_target`
-- exactly one provider target in Stage 1
-
-### `model_target`
-- exactly one model target in Stage 1
-
-### `routing_mode`
-Allowed Stage 1 value:
-- `direct_single_provider`
+### `target`
+Should identify the session and/or agent being inspected or tuned.
 
 ### `evidence_mode`
-Allowed Stage 1 values:
+Allowed values:
 - `write_local`
 - `disabled`
 
 ## Validation rules
 
 - all required fields must exist
-- `normalized_messages` must be non-empty
 - `metadata` must be object-shaped
-- no nested binary payloads in Stage 1 packet
+- `target` must be object-shaped
 - packet must be JSON-serializable
 
 ## Failure contract
 
-Invalid canonical packets must fail as `validation_error` before provider adaptation.
+Invalid canonical packets must fail as `validation_error` before downstream scan/report/backup/tuning logic runs.

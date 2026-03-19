@@ -1,11 +1,11 @@
-# Phase 1 Report — Contracts Before Code
+# Phase 1 Report — Contracts Before New Direction Implementation
 
 Date: 2026-03-19
-Status: complete
+Status: completed under previous repo posture; now retained as transitional reference
 
-## Objective
+## Objective at the time
 
-Complete Phase 1 by defining the written interfaces, examples, and conventions required before implementation begins.
+Complete the first contract pack needed for the earlier zero-base rebuild posture.
 
 ## Deliverables completed
 
@@ -26,42 +26,39 @@ Complete Phase 1 by defining the written interfaces, examples, and conventions r
 ### Examples
 - `docs/examples/phase1_examples.md`
 
-### Fresh baseline structure created
-- `src/ganglion/...`
-- `tests/contracts/`
-- `tests/fixtures/`
-- `runtime/evidence/`
-- `runtime/traces/`
-- `runtime/samples/`
-- `brains/.keep`
-- `exports/.keep`
+## Current interpretation
 
-## Scope discipline
+These materials are still useful, but they should now be interpreted as:
+- a discipline baseline
+- a naming/conventions pack
+- a transitional interface reference
 
-No implementation logic was introduced in this phase.
-This phase only establishes the contract pack, examples, and naming/path rules needed for Phase 2.
+They are **not by themselves the new product definition**.
 
-## Definition of done check
+## What changed after this phase
 
-A third party can now understand:
-- what Ganglion accepts from OpenClaw
-- what canonical packet Ganglion constructs
-- what provider request/response shape is expected
-- what OpenClaw receives back
-- what evidence must be written
-- how errors are represented
-- how files, paths, traces, and themed component names should be interpreted
+Project intent has shifted.
 
-## Known limits
+Ganglion is no longer primarily aimed at becoming a separate memory/runtime layer.
+Instead, Ganglion is now being repositioned as a:
+- lossless-claw visibility tool
+- brain scanner
+- backup/export helper
+- memory optimisation companion
 
-- schemas are written as interface documents, not executable validators yet
-- no packet-spine implementation exists yet
-- no provider adapter implementation exists yet
-- no success/failure runtime proof exists yet
+## What remains useful from Phase 1
 
-## Next correct move
+- boundary thinking
+- evidence-first posture
+- explicit naming
+- structured artifact design
+- disciplined contract writing
 
-Proceed to Phase 2 only:
-- implement the minimum packet spine against these contracts
-- produce success and failure evidence artifacts
-- provide exact validation outputs
+## What should be updated next
+
+The next contract set should be centred on:
+- visibility report outputs
+- brain scan artifact shapes
+- backup/export bundle structure
+- optimisation recommendation outputs
+- safe tuning workflow evidence

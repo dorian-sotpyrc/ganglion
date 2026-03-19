@@ -2,25 +2,28 @@
 
 ## Purpose
 
-Pairs Ganglion’s themed architecture names with plain engineering meanings.
+Pairs Ganglion’s themed architecture names with plain engineering meanings under the new lossless-claw companion posture.
 
-## Stage 1 active components
+## Active / near-term components
 
-- `Antennule` — ingress sensing and intake normalization
-- `Pleon` — canonical packet assembly and execution body
-- `Ventral Ganglion` — packet validation and run coordination
-- `Peduncle` — provider/API bridge
-- `Mandible` — response shaping into OpenClaw-compatible output
-- `Cortex Seed` — evidence capture and structured stage logging seed
+- `Antennule` — ingress sensing and intake normalization for operator-tool requests
+- `Pleon` — canonical work packet assembly for scans, reports, backups, and optimisation jobs
+- `Ventral Ganglion` — validation and run coordination
+- `Cortex` — visibility, reporting, and operator observation surface
+- `Brood` — backup/export bundle production
+- `Molt` — controlled tuning-change and rollback workflow support
 
-## Future-phase components
+## Transitional prototype components
 
-- `Supraesophageal Ganglion` — high-order policy and route selection
-- `Axon` — outbound signaling path
-- `Carapace` — protection and envelope guard
-- `Cortex` — local metrics and operator observation surface
-- `Molt` — controlled version transition and future tuning promotion
-- `Brood` — exportable portable brain bundles
+These names exist from the earlier packet-spine prototype and may remain as reference or be repurposed:
+- `Peduncle` — old provider/API bridge posture
+- `Mandible` — old response shaping posture
+- `Axon` — old outbound signaling path posture
+
+## Future expansion components
+
+- `Supraesophageal Ganglion` — higher-order policy and recommendation logic
+- `Carapace` — protection, safety checks, and integrity guards around risky changes
 
 ## Rule
 
