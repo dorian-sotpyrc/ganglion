@@ -1,10 +1,18 @@
 # Archive
 
-This directory contains the pre-zero-base Ganglion implementation and related legacy materials.
+This directory contains non-active Ganglion history.
 
-Status:
+## Contents
+
+### `legacy-pre-zero-base/`
+The older pre-reset Ganglion implementation.
+
+### `prototype-pre-lcm-companion-reset-2026-03-20/`
+The transitional zero-base/prototype implementation that existed before the clean reset into the lossless-claw companion direction.
+
+## Status
+
+Everything under `archive/` is:
 - retained for reference only
-- not the active base for the rebuild
-
-Primary legacy snapshot:
-- `legacy-pre-zero-base/`
+- not the active implementation base
+- subject to selective reuse only if explicitly justified

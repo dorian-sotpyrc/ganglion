@@ -1,15 +1,20 @@
 # Active Working Area
 
-Ganglion is now being reshaped into a **lossless-claw companion**.
+Ganglion is now at a **clean working base**.
 
 Current active posture:
 - lossless-claw remains the primary memory engine
-- Ganglion focuses on visibility, brain scanning, backup/export, and optimisation workflows
-- operator-readable outputs come before broad architectural expansion
-- prototype packet-spine/live-binding work is transitional unless explicitly reused
+- Ganglion will be rebuilt as a visibility, brain scanning, backup/export, and optimisation companion
+- active implementation directories are intentionally minimal until documentation review is complete
+
+Active implementation placeholders:
+- `src/`
+- `scripts/`
+- `tests/`
+- `fixtures/`
 
 Immediate active work:
-- rewrite specs around the new role
-- define first useful operator reports and artifacts
-- update development plan
-- identify which existing code can support the new direction
+- review documentation
+- confirm phased development plan
+- define first report/spec outputs
+- begin the first read-only implementation slice after approval

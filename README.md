@@ -1,83 +1,71 @@
 # Ganglion
 
-Ganglion is being repositioned as a **lossless-claw companion toolset** for OpenClaw.
+Ganglion is now on a **clean working base**.
 
-It is **not** the primary memory engine.
-The primary memory engine is **lossless-claw**.
+The active implementation surface has been reset so the repository can be rebuilt deliberately as a:
+- **lossless-claw visibility tool**
+- **brain scanner**
+- **backup/export helper**
+- **memory optimisation companion**
 
-Ganglion's role is now to improve operator visibility, safety, backupability, and tuning around the existing lossless-claw deployment.
+## Core decision
 
-## New design intent
+- **lossless-claw is the primary memory engine**
+- Ganglion is the companion layer around that engine
 
-Ganglion should become a tool/plugin layer focused on four jobs:
+## Current repository posture
 
-1. **Visibility**
-   - inspect what lossless-claw is doing
-   - surface session memory posture, summary depth, tail protection, context pressure, and retrieval state
-   - make memory behaviour legible to operators
+### Active
+Active work now starts from:
+- docs
+- development plan
+- empty implementation placeholders under:
+  - `src/`
+  - `scripts/`
+  - `tests/`
+  - `fixtures/`
 
-2. **Brain scanning**
-   - scan an agent/session memory state
-   - explain what is raw, what is summarized, what is condensed, and what is still directly available
-   - provide operator-readable memory posture reports
+### Archived
+Previous implementation attempts are preserved under `archive/`:
+- `archive/legacy-pre-zero-base/`
+- `archive/prototype-pre-lcm-companion-reset-2026-03-20/`
 
-3. **Backup / export safety**
-   - snapshot or export memory state in an inspectable form
-   - support backup-oriented workflows for key sessions/agents
-   - preserve rollback and recovery options
+Those archives are reference only, not the active implementation base.
 
-4. **Memory optimisation / tuning**
-   - help tune existing lossless-claw settings rather than replace them
-   - recommend or apply safer settings for fresh tail, thresholds, depth, exclusions, and summarization posture
-   - support measurement-driven tuning rather than intuition-driven changes
+## Why reset again
 
-## What Ganglion is not
+The repo had drifted into carrying transitional prototype code from the earlier zero-base effort.
+That code may still contain useful ideas, but it no longer reflected the current product intent.
 
-Ganglion is no longer positioned as:
-- a competing memory system
-- a replacement for lossless-claw
-- a speculative parallel brain runtime
-- a broad middleware layer that must own all provider traffic before it is useful
+This reset restores a truthful base so the next implementation phase can begin cleanly.
 
-## Current repository status
+## What comes next
 
-This repository still contains proof-stage rebuild work from the earlier zero-base reset:
-- minimum packet spine proof
-- evidence writing
-- live-binding pilot
-- contract pack and conventions
+Ganglion should now be built in phased slices:
 
-That work is now treated as **transitional reference/prototype material** rather than the final product direction.
+1. visibility report specifications
+2. brain scan specifications
+3. backup/export artifact specifications
+4. optimisation review specifications
+5. first read-only implementation slice
+6. safe change-planning workflows
 
-## New target product
+## Working principle
 
-The intended end-state is an OpenClaw-compatible companion/plugin/tool layer that helps operators answer questions like:
-- What does lossless-claw currently remember for this session?
-- What has been summarized vs preserved raw?
-- What is the current context pressure?
-- Are settings too aggressive or too weak?
-- Can we safely back this state up before changing tuning?
-- What tuning changes are recommended for this workload?
+Ganglion should make lossless-claw:
+- easier to understand
+- easier to inspect
+- easier to back up
+- easier to tune
+- safer to evolve
 
-## Priority surfaces
+It should not become a second hidden memory system.
 
-Ganglion should eventually expose:
-- memory visibility reports
-- brain scan summaries
-- session backup/export helpers
-- tuning recommendations
-- optional operator controls for safe configuration updates
-- evidence artifacts for before/after tuning comparisons
+## Key files
 
-## Immediate repo priorities
-
-1. refactor docs and plan around the new role
-2. define the lossless-claw companion contracts
-3. specify visibility / scan / backup / optimise workflows
-4. decide what prototype code to keep, adapt, or archive
-5. implement the first operator-valuable feature before broadening scope
-
-## Operator principle
-
-Ganglion should make lossless-claw **more understandable, more inspectable, and safer to operate**.
-It should not make the memory stack more mysterious.
+- `DEVELOPMENT_PLAN.md`
+- `RESET_BRIEF.md`
+- `ROADMAP_ZERO_BASE.md`
+- `docs/briefs/GANGLION_ZERO_BASE_REBUILD_BRIEF_FULL.md`
+- `active/README.md`
+- `archive/README.md`

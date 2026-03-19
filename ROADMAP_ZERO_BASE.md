@@ -1,76 +1,82 @@
 # Ganglion Refocus Roadmap
 
-## Phase A — strategic refocus + repo truthfulness
+## Current state
+
+Phase A is now effectively complete at the repo-structure level:
+- design intent refocused around lossless-claw operations
+- prototype code archived
+- active implementation surface reset to a clean base
+
+## Phase A — strategic refocus + clean base
 
 Goal:
-- align repo narrative, plan, and active surface with the new role as a lossless-claw companion
+- align repo narrative and structure with Ganglion’s role as a lossless-claw companion
 
 Deliverables:
-- updated README
-- updated reset/governing brief
-- updated active posture docs
-- explicit statement of what prototype code is transitional vs active
-- development plan for the new direction
+- updated README and briefs
+- updated active/archive posture docs
+- archived transitional prototype code
+- empty active implementation surface
+- phased development plan
 
 Exit criteria:
-- no top-level docs present Ganglion as a competing memory engine
-- repo posture clearly states lossless-claw is primary memory
-- next implementation steps are operator-tool oriented
+- repo does not imply Ganglion is a competing memory engine
+- active code surface is clean and truthful
+- next work starts from specs, not drift
 
 ## Phase B — visibility and brain scan specifications
 
 Goal:
-- define the minimum operator-facing interfaces for inspecting lossless-claw state
+- define the minimum operator-facing outputs for inspecting lossless-claw state
 
 Deliverables:
 - visibility report spec
 - brain scan spec
 - backup/export artifact spec
-- tuning recommendation spec
+- optimisation review spec
 - before/after evidence format
 
 Exit criteria:
-- operator can understand what the first useful Ganglion outputs will be
-- interfaces are clear enough to implement without product drift
+- operator can understand the first useful Ganglion outputs
+- interfaces are clear enough to implement cleanly
 
-## Phase C — minimum useful implementation
+## Phase C — minimum useful read-only implementation
 
 Goal:
-- deliver the first real operator value around the existing lossless-claw deployment
+- deliver the first operator value without write-risk
 
 Target features:
 - inspect current session/agent memory posture
 - produce a brain scan report
-- export a safe backup/snapshot artifact
-- generate tuning recommendations from observed posture
+- produce backup/export artifacts
+- generate optimisation recommendations
 
 Required evidence:
-- sample scan input
-- produced visibility report
-- produced backup artifact
-- produced optimisation recommendation report
-- tests or fixture-driven proof
+- sample inputs
+- report artifacts
+- backup artifacts
+- fixture-driven tests
+- operator-readable examples
 
-## Phase D — safe tuning workflows
+## Phase D — safe change planning
 
 Goal:
-- move from read-only inspection to controlled optimisation support
+- move from diagnosis to safe improvement planning
 
 Target features:
-- validate current lossless-claw settings
-- compare current settings to recommended profile
+- compare active config to recommended profile
 - produce safe change plans
-- optionally write config patches with explicit rollback path
+- generate rollback notes
+- validate before/after state
 
-Required evidence:
-- before/after config diff
-- rollback artifact
-- validation output
-- operator-facing summary of expected tradeoffs
+## Phase E — optional controlled write-paths
 
-## Out of scope unless explicitly revived
+Goal:
+- enable carefully guarded tuning changes only after read-only tooling is proven
 
-- replacing lossless-claw as the memory engine
-- building a broad speculative brain runtime first
-- general provider middleware expansion as the primary project identity
-- large dashboard ambitions before useful operator tooling exists
+Guardrails:
+- backup first
+- dry-run first
+- explicit rollback path
+- post-change validation
+- human-readable tradeoff summary

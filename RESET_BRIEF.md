@@ -5,36 +5,30 @@ Canonical governing brief:
 
 ## Status
 
-Ganglion is under **strategic refocus**.
-
-The earlier zero-base rebuild was useful as a discipline reset, but the project direction has now changed:
-- **lossless-claw is the chosen memory engine**
-- Ganglion should become a **visibility, brain scanning, backup, and memory optimisation companion** around that engine
+Ganglion is now at a **clean reset base** for the lossless-claw companion direction.
 
 ## Short operating posture
 
-- do not treat Ganglion as a competing memory system
-- do not grow a parallel long-term memory runtime by default
-- design around the existing lossless-claw integration
-- prioritise operator visibility and safe tuning over broad middleware ambition
-- keep earlier packet-spine and live-binding work as transitional prototype/reference material unless explicitly reused
+- lossless-claw is the chosen memory engine
+- Ganglion is the companion layer
+- prior code attempts are archived
+- active implementation is intentionally reset to minimal placeholders
+- next work starts from reviewed docs and phased planning, not from inherited prototype drift
 
-## New first product target
+## Active vs archived
 
-The first meaningful Ganglion product is now:
-- **inspectable operator tooling for lossless-claw**
+### Active
+- repo docs and plans
+- placeholder implementation roots in `src/`, `scripts/`, `tests/`, and `fixtures/`
 
-That includes:
-- session/agent memory visibility
-- brain scan reports
-- backup/export helpers
-- tuning recommendations and optimisation workflows
+### Archived
+- `archive/legacy-pre-zero-base/`
+- `archive/prototype-pre-lcm-companion-reset-2026-03-20/`
 
-## Current active/legacy split
+## First product target
 
-- active refocus surface: repo root, `active/`, and updated docs/specs
-- transitional prototype/reference surface: current packet-spine and live-binding code under `src/`, `scripts/`, and tests until reclassified
-- archived legacy surface: `archive/legacy-pre-zero-base/`
+The first meaningful Ganglion product remains:
+- inspectable operator tooling for lossless-claw
 
 ## Evidence rule
 
